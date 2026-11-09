@@ -35,6 +35,7 @@ cookie_lock = threading.Lock()
 
 animes_list = []
 title_index = {}
+tmdb_index = {}
 cache_files = {}
 cache_filler = {}
 cache_name = {}
@@ -62,17 +63,21 @@ def init_tokens():
     print(f"[Anitsu Cloud] Using initial refresh_token: {refresh_token[:6]}***")
 
 def init_catalog():
-    global animes_list, title_index
+    global animes_list, title_index, tmdb_index
     if os.path.exists(CATALOG_FILE):
         with open(CATALOG_FILE, 'r', encoding='utf-8') as f:
             animes_list = json.load(f)
         idx = {}
+        tmdb_map = {}
         for a in animes_list:
             for al in a.get('a', []):
                 if al and al not in idx:
                     idx[al] = a
+            if a.get('tmdb'):
+                tmdb_map[str(a['tmdb'])] = a
         title_index = idx
-        print(f"[Anitsu Cloud] Loaded {len(animes_list)} animes, indexed {len(title_index)} titles.")
+        tmdb_index = tmdb_map
+        print(f"[Anitsu Cloud] Loaded {len(animes_list)} titles, indexed {len(title_index)} aliases.")
 
 def refresh_session():
     global current_cookie, refresh_token
@@ -143,7 +148,7 @@ def home(request: Request):
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }}
         body {{ background: #0f1015; color: #f0f2f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }}
-        .header {{ text-align: center; margin-bottom: 40px; max-width: 600px; }}
+        .header {{ text-align: center; margin-bottom: 40px; max-width: 650px; }}
         .header h1 {{ font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; }}
         .header p {{ color: #94a3b8; font-size: 1.05rem; line-height: 1.5; }}
         .status-badge {{ display: inline-flex; align-items: center; gap: 8px; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #4ade80; padding: 6px 14px; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; margin-top: 15px; }}
@@ -173,7 +178,7 @@ def home(request: Request):
         <p>Servidores 24/7 de alta velocidade com reprodução instantânea para Android TV, Celular e PC.</p>
         <div class="status-badge">
             <span class="status-dot"></span>
-            <span>Online & Conectado · {len(animes_list)} Animes na Nuvem</span>
+            <span>Online & Conectado · {len(animes_list)} Títulos (Animes, Desenhos, Filmes e Doramas)</span>
         </div>
     </div>
 
@@ -185,11 +190,11 @@ def home(request: Request):
                     <img src="https://nuvem.anitsu.moe/icon.png" class="card-icon" alt="Anitsu">
                     <div>
                         <div class="card-title">☁️ Anitsu Nuvem [PT-BR]</div>
-                        <div style="font-size: 0.8rem; color: #a855f7;">Fansubs 1080p & Dublados</div>
+                        <div style="font-size: 0.8rem; color: #a855f7;">Animes · Desenhos · Filmes · Doramas</div>
                     </div>
                 </div>
                 <div class="card-desc">
-                    Acesso completo ao acervo de 5.100+ animes com dublagens e legendas oficiais em português, transmitidos diretamente da nuvem sem torrents.
+                    5.700+ Títulos em 1080p Fansub Dual com dublagens e legendas oficiais em português, transmitidos diretamente da nuvem sem torrents.
                 </div>
             </div>
             <div>
@@ -220,7 +225,7 @@ def home(request: Request):
     </div>
 
     <div class="footer">
-        Deploy 24/7 Ativo · Antigravity OmniRoute Cloud Addon
+        Deploy 24/7 Ativo no Render · OmniRoute Stremio Cloud Addon
     </div>
 
     <div id="toast" class="toast">Link copiado com sucesso!</div>
@@ -274,7 +279,7 @@ def anitsu_list_files(path):
         pass
     return []
 
-def resolve_stremio_title(video_id):
+def resolve_stremio_title(video_id, prefer_type="series"):
     parts = video_id.split(':')
     series_id = parts[0]
     if series_id.startswith('kitsu'):
@@ -286,16 +291,23 @@ def resolve_stremio_title(video_id):
         except Exception:
             pass
     elif series_id.startswith('tt'):
-        try:
-            r = requests.get(f'https://v3-cinemeta.strem.io/meta/series/{series_id}.json', headers={'User-Agent': UA}, timeout=4)
-            if r.status_code == 200:
-                return r.json().get('meta', {}).get('name')
-        except Exception:
-            pass
+        endpoints = [f'https://v3-cinemeta.strem.io/meta/{prefer_type}/{series_id}.json']
+        alt_type = "movie" if prefer_type == "series" else "series"
+        endpoints.append(f'https://v3-cinemeta.strem.io/meta/{alt_type}/{series_id}.json')
+        for ep in endpoints:
+            try:
+                r = requests.get(ep, headers={'User-Agent': UA}, timeout=4)
+                if r.status_code == 200:
+                    name = r.json().get('meta', {}).get('name')
+                    if name:
+                        return name
+            except Exception:
+                pass
     return None
 
 def find_episode_file(anime, season_num, ep_num):
     root_folder = f"{anime['p']}/{anime['n']}"
+    is_movie = anime.get('t') == 'movie' or 'Filmes' in anime.get('p', '')
     
     def search_folder(folder, target_season, target_ep, depth=0):
         if depth > 3:
@@ -306,6 +318,18 @@ def find_episode_file(anime, season_num, ep_num):
             
         video_files = [f for f in files if not f.get('is_directory') and f.get('name', '').lower().endswith(('.mkv', '.mp4'))]
         if video_files:
+            if is_movie:
+                # For movies, pick the best video file
+                def score_movie(vf):
+                    n = vf.get('name', '').lower()
+                    score = 0
+                    if '1080' in n: score += 10
+                    if 'bluray' in n or 'bd' in n: score += 5
+                    if 'dual' in n or 'dublado' in n: score += 5
+                    return score
+                video_files.sort(key=score_movie, reverse=True)
+                return f"{folder}/{video_files[0]['name']}", video_files[0]
+
             patterns = [
                 re.compile(rf'[\s\-_]0*{target_ep}\b'),
                 re.compile(rf'[eE]0*{target_ep}\b'),
@@ -323,8 +347,8 @@ def find_episode_file(anime, season_num, ep_num):
         if not subdirs:
             return None
             
-        if depth == 0 and len(subdirs) > 1:
-            filtered = [s for s in subdirs if not any(x in s.lower() for x in ['ova', 'movie', 'live action', 'chuugakkou'])]
+        if depth == 0 and len(subdirs) > 1 and not is_movie:
+            filtered = [s for s in subdirs if not any(x in s.lower() for x in ['ova', 'chuugakkou'])]
             pat = re.compile(rf'(?:season|temporada|s|part)\s*0?{target_season}\b', re.I)
             matched = [s for s in filtered if pat.search(s)]
             if not matched and target_season == 1:
@@ -338,6 +362,7 @@ def find_episode_file(anime, season_num, ep_num):
             if '1080' in d: score += 10
             if 'bd' in d or 'blu-ray' in d or 'bluray' in d: score += 5
             if 'anipakku' in d: score += 3
+            if 'dual' in d: score += 3
             if '720' in d: score -= 5
             return score
             
@@ -353,18 +378,45 @@ def find_episode_file(anime, season_num, ep_num):
 def get_anitsu_manifest():
     return {
         "id": "community.anitsu.cloud",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "name": "☁️ Anitsu Nuvem [PT-BR]",
-        "description": "5.000+ Animes com dublagem e legendas em português (Fansub 1080p) direto da Nuvem Anitsu!",
+        "description": "5.700+ Animes, Desenhos Animados, Filmes e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu!",
         "logo": "https://nuvem.anitsu.moe/icon.png",
         "resources": ["catalog", "meta", "stream"],
         "types": ["anime", "series", "movie"],
         "idPrefixes": ["anitsu:", "kitsu", "tt", "mal"],
         "catalogs": [
             {
-                "id": "anitsu-popular",
-                "name": "☁️ Anitsu · Catálogo Completo (PT-BR)",
+                "id": "anitsu-anime",
+                "name": "☁️ Anitsu · Animes (PT-BR)",
                 "type": "anime",
+                "extra": [
+                    {"name": "search", "isRequired": False},
+                    {"name": "skip", "isRequired": False}
+                ]
+            },
+            {
+                "id": "anitsu-desenhos",
+                "name": "🎨 Anitsu · Desenhos & Cartoons (PT-BR)",
+                "type": "series",
+                "extra": [
+                    {"name": "search", "isRequired": False},
+                    {"name": "skip", "isRequired": False}
+                ]
+            },
+            {
+                "id": "anitsu-filmes",
+                "name": "🎬 Anitsu · Filmes Animados (PT-BR)",
+                "type": "movie",
+                "extra": [
+                    {"name": "search", "isRequired": False},
+                    {"name": "skip", "isRequired": False}
+                ]
+            },
+            {
+                "id": "anitsu-doramas",
+                "name": "🎭 Anitsu · Doramas Asiáticos (PT-BR)",
+                "type": "series",
                 "extra": [
                     {"name": "search", "isRequired": False},
                     {"name": "skip", "isRequired": False}
@@ -378,27 +430,40 @@ def get_anitsu_manifest():
 def manifest():
     return get_anitsu_manifest()
 
-@app.get("/catalog/anime/{catalog_id}.json")
-def catalog(catalog_id: str, search: str = "", skip: int = 0):
-    results = animes_list
+@app.get("/catalog/{type_}/{catalog_id}.json")
+def catalog(type_: str, catalog_id: str, search: str = "", skip: int = 0):
+    if catalog_id == "anitsu-desenhos":
+        filtered = [a for a in animes_list if a.get('c') == 'desenhos' and a.get('t') == 'series']
+    elif catalog_id == "anitsu-filmes":
+        filtered = [a for a in animes_list if a.get('c') == 'desenhos' and a.get('t') == 'movie']
+    elif catalog_id == "anitsu-doramas":
+        filtered = [a for a in animes_list if a.get('c') == 'doramas']
+    elif catalog_id == "anitsu-anime" or catalog_id == "anitsu-popular":
+        filtered = [a for a in animes_list if a.get('c', 'anime') == 'anime']
+    else:
+        filtered = [a for a in animes_list if a.get('t', 'series') == type_ or a.get('c') == type_]
+
     if search:
-        s = search.lower()
-        results = [a for a in animes_list if s in a['n'].lower()]
-    sliced = results[skip:skip+50]
+        s = norm(search)
+        filtered = [a for a in filtered if s in norm(a['n']) or any(s in al for al in a.get('a', []))]
+
+    sliced = filtered[skip:skip+50]
     metas = []
     for a in sliced:
+        stremio_type = "movie" if a.get('t') == 'movie' else ("anime" if a.get('c') == 'anime' else "series")
+        cat_badge = "Anime" if a.get('c') == 'anime' else ("Desenho" if a.get('c') == 'desenhos' else "Dorama")
         metas.append({
             "id": f"anitsu:{a['id']}",
-            "type": "anime",
+            "type": stremio_type,
             "name": a['n'],
             "poster": a.get('img') or "https://nuvem.anitsu.moe/icon.png",
-            "description": f"Disponível na Nuvem Anitsu ({a['p']})",
-            "genres": ["Anime", "PT-BR"]
+            "description": f"Disponível na Nuvem Anitsu ({a['p']}) · 1080p Dual PT-BR",
+            "genres": [cat_badge, "PT-BR"]
         })
     return {"metas": metas}
 
-@app.get("/meta/anime/{video_id}.json")
-def meta(video_id: str):
+@app.get("/meta/{type_}/{video_id}.json")
+def meta(type_: str, video_id: str):
     match = re.search(r'anitsu:(\d+)', video_id)
     if not match:
         return {"meta": {}}
@@ -410,37 +475,49 @@ def meta(video_id: str):
     root_folder = f"{anime['p']}/{anime['n']}"
     files = anitsu_list_files(root_folder)
     videos = []
-    subdirs = [f['name'] for f in files if f.get('is_directory')]
-    if subdirs:
-        for s_idx, sname in enumerate(subdirs):
-            s_files = anitsu_list_files(f"{root_folder}/{sname}")
-            vfiles = [f for f in s_files if not f.get('is_directory') and f['name'].lower().endswith(('.mkv', '.mp4'))]
+    is_movie = anime.get('t') == 'movie' or 'Filmes' in anime.get('p', '')
+
+    if is_movie:
+        videos.append({
+            "id": f"anitsu:{aid}",
+            "title": anime['n'],
+            "released": "2024-01-01"
+        })
+    else:
+        subdirs = [f['name'] for f in files if f.get('is_directory')]
+        if subdirs:
+            for s_idx, sname in enumerate(subdirs):
+                s_files = anitsu_list_files(f"{root_folder}/{sname}")
+                vfiles = [f for f in s_files if not f.get('is_directory') and f['name'].lower().endswith(('.mkv', '.mp4'))]
+                vfiles.sort(key=lambda x: x['name'])
+                for ep_idx, vf in enumerate(vfiles):
+                    videos.append({
+                        "id": f"anitsu:{aid}:{s_idx+1}:{ep_idx+1}",
+                        "title": vf['name'],
+                        "season": s_idx + 1,
+                        "episode": ep_idx + 1
+                    })
+        else:
+            vfiles = [f for f in files if not f.get('is_directory') and f['name'].lower().endswith(('.mkv', '.mp4'))]
             vfiles.sort(key=lambda x: x['name'])
             for ep_idx, vf in enumerate(vfiles):
                 videos.append({
-                    "id": f"anitsu:{aid}:{s_idx+1}:{ep_idx+1}",
+                    "id": f"anitsu:{aid}:1:{ep_idx+1}",
                     "title": vf['name'],
-                    "season": s_idx + 1,
+                    "season": 1,
                     "episode": ep_idx + 1
                 })
-    else:
-        vfiles = [f for f in files if not f.get('is_directory') and f['name'].lower().endswith(('.mkv', '.mp4'))]
-        vfiles.sort(key=lambda x: x['name'])
-        for ep_idx, vf in enumerate(vfiles):
-            videos.append({
-                "id": f"anitsu:{aid}:1:{ep_idx+1}",
-                "title": vf['name'],
-                "season": 1,
-                "episode": ep_idx + 1
-            })
+
+    stremio_type = "movie" if is_movie else ("anime" if anime.get('c') == 'anime' else "series")
+    cat_badge = "Anime" if anime.get('c') == 'anime' else ("Desenho" if anime.get('c') == 'desenhos' else "Dorama")
 
     return {
         "meta": {
             "id": f"anitsu:{aid}",
-            "type": "anime",
+            "type": stremio_type,
             "name": anime['n'],
             "poster": anime.get('img') or "https://nuvem.anitsu.moe/icon.png",
-            "genres": ["Anime", "PT-BR"],
+            "genres": [cat_badge, "PT-BR"],
             "videos": videos
         }
     }
@@ -451,24 +528,31 @@ def stream(type_: str, video_id: str, request: Request):
     matched_anime = None
     season_num = 1
     ep_num = 1
+    is_movie = type_ == "movie" or (len(parts) == 1 and video_id.startswith('tt'))
 
     if video_id.startswith('anitsu:'):
         aid = int(parts[1])
         matched_anime = next((a for a in animes_list if a['id'] == aid), None)
-        season_num = int(parts[2]) if len(parts) >= 3 else 1
-        ep_num = int(parts[3]) if len(parts) >= 4 else 1
+        if len(parts) >= 4:
+            season_num = int(parts[2])
+            ep_num = int(parts[3])
     elif video_id.startswith('kitsu'):
-        title = resolve_stremio_title(video_id)
+        title = resolve_stremio_title(video_id, prefer_type="series")
         if title:
             matched_anime = find_anime_by_title(title)
         season_num = 1
         ep_num = int(parts[2]) if len(parts) >= 3 else (int(parts[1]) if len(parts) >= 2 else 1)
     elif video_id.startswith('tt'):
-        title = resolve_stremio_title(video_id)
+        prefer = "movie" if is_movie else "series"
+        title = resolve_stremio_title(video_id, prefer_type=prefer)
         if title:
             matched_anime = find_anime_by_title(title)
-        season_num = int(parts[1]) if len(parts) >= 2 else 1
-        ep_num = int(parts[2]) if len(parts) >= 3 else 1
+        if len(parts) >= 3:
+            season_num = int(parts[1])
+            ep_num = int(parts[2])
+        elif len(parts) == 2:
+            season_num = 1
+            ep_num = int(parts[1])
 
     if not matched_anime:
         return {"streams": []}
@@ -480,6 +564,8 @@ def stream(type_: str, video_id: str, request: Request):
     remote_path, vf = res
     size_mb = round(vf.get('size', 0) / (1024 * 1024))
     size_str = f" · {size_mb} MB" if size_mb > 0 else ""
+    cat_tag = "Desenhos" if matched_anime.get('c') == 'desenhos' else ("Dorama" if matched_anime.get('c') == 'doramas' else "Anitsu")
+    ep_info = f"Filme" if is_movie else f"Ep. {ep_num}"
     
     # 1. Direct stream URL with proxyHeaders (streams straight from Anitsu Nuvem!)
     direct_url = f"https://nuvem.anitsu.moe/api/download?path={urllib.parse.quote(remote_path)}"
@@ -494,8 +580,8 @@ def stream(type_: str, video_id: str, request: Request):
     return {
         "streams": [
             {
-                "name": "☁️ Anitsu Cloud [PT-BR]",
-                "title": f"Ep. {ep_num} [1080p Fansub PT-BR{size_str}]\n{vf.get('name')}",
+                "name": f"☁️ {cat_tag} [PT-BR]",
+                "title": f"{ep_info} [1080p Fansub Dual{size_str}]\n{vf.get('name')}",
                 "url": direct_url,
                 "behaviorHints": {
                     "notWebReady": False,
@@ -510,8 +596,8 @@ def stream(type_: str, video_id: str, request: Request):
                 }
             },
             {
-                "name": "☁️ Anitsu Proxy [PT-BR]",
-                "title": f"Ep. {ep_num} [Proxy Alternativo]\n{vf.get('name')}",
+                "name": f"☁️ {cat_tag} Proxy [PT-BR]",
+                "title": f"{ep_info} [Proxy Alternativo]\n{vf.get('name')}",
                 "url": proxy_url,
                 "behaviorHints": {
                     "notWebReady": False,
@@ -595,7 +681,7 @@ def filler_stream(type_: str, video_id: str):
     else:
         ep_num = int(parts[2]) if len(parts) >= 3 else int(parts[1])
 
-    slug = KNOWN_SLUGS.get(series_id) or norm(resolve_stremio_title(video_id)).replace(' ', '-')
+    slug = KNOWN_SLUGS.get(series_id) or norm(resolve_stremio_title(video_id, prefer_type="series")).replace(' ', '-')
     filler_data = get_filler_data(slug)
     if not filler_data or ep_num not in filler_data:
         return {"streams": []}
