@@ -28,8 +28,8 @@ SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsIm
 TOKEN_CACHE_FILE = os.path.join(os.path.dirname(__file__), 'token_cache.json')
 CATALOG_FILE = os.path.join(os.path.dirname(__file__), 'catalog_min.json')
 
-DEFAULT_FALLBACK_TOKEN = 'at4jx3pg4gwq'
-DEFAULT_INITIAL_COOKIE = os.getenv('ANITSU_COOKIE', 'sb-auth-auth-token.0=base64-eyJhY2Nlc3NfdG9rZW4iOiAiZXlKaGJHY2lPaUpGVXpJMU5pSXNJbXRwWkNJNkltTmlPV1EwWkRreUxUbGpPV1V0TkROak1TMWhNekJqTFRobFkyVmlOamN5TW1ObE9DSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKb2RIUndjem92TDJGMWRHZ3VZVzVwZEhOMUxtMXZaUzloZFhSb0wzWXhJaXdpYzNWaUlqb2lOR1JqTXpNMFkyUXRZamxoTkMwME56RTNMVGhtWm1VdFlqQTJZbUkyTWpjelpERTNJaXdpWVhWa0lqb2lZWFYwYUdWdWRHbGpZWFJsWkNJc0ltVjRjQ0k2TVRjNU5ESXdNelkwT1N3aWFXRjBJam94TnprME1qQXdNRFE1TENKbGJXRnBiQ0k2SW1Wa2RXRnlaRzloYm1SbGNuTnZialF6UUdkdFlXbHNMbU52YlNJc0luQm9iMjVsSWpvaUlpd2lZWEJ3WDIxbGRHRmtZWFJoSWpwN0ltMWxiV0psY2lJNmRISjFaU3dpY0hKdmRtbGtaWElpT2lKbGJXRnBiQ0lzSW5CeWIzWnBaR1Z5Y3lJNld5SmxiV0ZwYkNJc0ltUnBjMk52Y21RaVhYMHNJblZ6WlhKZmJXVjBZV1JoZEdFaU9uc2lZWFpoZEdGeUlqb2lJaXdpWVhaaGRHRnlYM1Z5YkNJNkltaDBkSEJ6T2k4dlkyUnVMbVJwYzJOdmNtUmhjSEF1WTI5dEwyRjJZWFJoY25Ndk1qazJNRGs0TkRFd016VTRPRGs0TmprNUwyVTBPV1JrWWpZelpEbGpPV1pqWVRnMFpHVTBZekUzTnpkbVl6QmhZemRtTG5CdVp5SXNJbU4xYzNSdmJWOWpiR0ZwYlhNaU9uc2laMnh2WW1Gc1gyNWhiV1VpT2lKQmJtUmxjbk52YmlKOUxDSmxiV0ZwYkNJNkltVmtkV0Z5Wkc5aGJtUmxjbk52YmpRelFHZHRZV2xzTG1OdmJTSXNJbVZ0WVdsc1gzWmxjbWxtYVdWa0lqcDBjblZsTENKbWRXeHNYMjVoYldVaU9pSmhibVJsY25OdmJqQXdNREVpTENKcGMzTWlPaUpvZEhSd2N6b3ZMMlJwYzJOdmNtUXVZMjl0TDJGd2FTSXNJbTVoYldVaU9pSmhibVJsY25OdmJqQXdNREVqTUNJc0luQm9iMjVsWDNabGNtbG1hV1ZrSWpwbVlXeHpaU3dpY0dsamRIVnlaU0k2SW1oMGRIQnpPaTh2WTJSdUxtUnBjMk52Y21SaGNIQXVZMjl0TDJGMllYUmhjbk12TWprMk1EazROREV3TXpVNE9EazROams1TDJVME9XUmtZall6WkRsak9XWmpZVGcwWkdVMFl6RTNOemRtWXpCaFl6ZG1MbkJ1WnlJc0luQnliM1pwWkdWeVgybGtJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWMzVmlJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWRYTmxjbTVoYldVaU9pSkJibVJsY25OdmJqUXpNVE1pZlN3aWNtOXNaU0k2SW1GMWRHaGxiblJwWTJGMFpXUWlMQ0poWVd3aU9pSmhZV3d4SWl3aVlXMXlJanBiZXlKdFpYUm9iMlFpT2lKdllYVjBhQ0lzSW5ScGJXVnpkR0Z0Y0NJNk1UYzVOREU1T0RRNU0zMWRMQ0p6WlhOemFXOXVYMmxrSWpvaVpqRTJZakF5T1dRdFptUmhZaTAwTURKaUxXRTJZekl0Wm1Vd1lUUmlaVGc1T0RBeUlpd2lhWE5mWVc1dmJubHRiM1Z6SWpwbVlXeHpaWDAuWVZrWURWTmZSbDNraW0wbEtoUk52UFRPa2NoSmNCNXNFS2pRbllpZTdfaVR3aHdYV1g1N2dHNjJzdjBQcDFGZktWT0RjWmFYb1Nua1lHZ0tpdFFrS2ciLCAidG9rZW5fdHlwZSI6ICJiZWFyZXIiLCAiZXhwaXJlc19pbiI6IDM2MDAsICJleHBpcmVzX2F0IjogMTc5NDIwMzY0OSwgInJlZnJlc2hfdG9rZW4iOiAiYXQ0angzcGc0Z3dxIiwgInVzZXIiOiB7ImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJhdWQiOiAiYXV0aGVudGljYXRlZCIsICJyb2xlIjogImF1dGhlbnRpY2F0ZWQiLCAiZW1haWwiOiAiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwgImVtYWlsX2NvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAicGhvbmUiOiAiIiwgImNvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAibGFzdF9zaWduX2luX2F0IjogIjIwMjYtMTEtMDlUMDQ6Mjg6MTMuODIyMDI5WiIsICJhcHBfbWV0YWRhdGEiOiB7Im1lbWJlciI6IHRydWUsICJwcm92aWRlciI6ICJlbWFpbCIsICJwcm92aWRlcnMiOiBbImVtYWlsIiwgImRpc2NvcmQiXX0sICJ1c2VyX21ldGFkYXRhIjogeyJhdmF0YXIiOiAiIiwgImF2YXRhcl91cmwiOiAiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiNjNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwgImN1c3RvbV9jbGFpbXMiOiB7Imdsb2JhbF9uYW1lIjogIkFuZGVyc29uIn0sICJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiB0cnVlLCAiZnVsbF9uYW1lIjogImFuZGVyc29uMDAwMSIsICJpc3MiOiAiaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkiLCAibmFtZSI6ICJhbmRlcnNvbjAwMDEjMCIsICJwaG9uZV92ZXJpZmllZCI6IGZhbHNlLCAicGljdHVyZSI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAicHJvdmlkZXJfaWQiOiAiMjk2MDk4NDEwMzU4ODk4Njk5IiwgInN1YiI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcm5hbWUiOiAiQW5kZXJzb240MzEzIn0sICJpZGVudGl0aWVzIjogW3siaWRlbnRpdHlfaWQiOiAiZWFjNTEzMDQtOGMxMC00ZDdhLWIxMjUtNzk2ZDRhYWRiZDdlIiwgImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJ1c2VyX2lkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJpZGVudGl0eV9kYXRhIjogeyJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiBmYWxzZSwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJzdWIiOiAiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3In0sICJwcm92aWRlciI6ICJlbWFpbCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODUzNzRaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9LCB7ImlkZW50aXR5X2lkIjogIjdmMTJjOTY2LWU4OWItNDZkYy04MjY5LWY2NDllYWUxZWE0YSIsICJpZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcl9pZCI6ICI0ZGMzMzRjZC1iOWE0LTQ3MTctOGZmZS1iMDZiYjYyNzNkMTciLCAiaWRlbnRpdHlfZGF0YSI6IHsiYXZhdGFyX3VybCI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAiY3VzdG9tX2NsYWltcyI6IHsiZ2xvYmFsX25hbWUiOiAiQW5kZXJzb24ifSwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSIsICJlbWFpbF92ZXJpZmllZCI6IHRydWUsICJmdWxsX25hbWUiOiAiYW5kZXJzb24wMDAxIiwgImlzcyI6ICJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsICJuYW1lIjogImFuZGVyc29uMDAwMSMwIiwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJwaWN0dXJlIjogImh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsICJwcm92aWRlcl9pZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcm5hbWUiOiAiQW5kZXJzb240MzEzIn0sICJwcm92aWRlciI6ICJkaXNjb3JkIiwgImxhc3Rfc2lnbl9pbl9hdCI6ICIyMDI0LTEwLTIwVDIwOjE1OjUxLjYyNTUzM1oiLCAiY3JlYXRlZF9hdCI6ICIyMDI0LTEwLTIwVDIwOjE1OjUxLjYyNTU5MloiLCAidXBkYXRlZF9hdCI6ICIyMDI2LTExLTA5VDA0OjI4OjEzLjAzODMyOFoiLCAiZW1haWwiOiAiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIn1dLCAiY3JlYXRlZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4MzE4OVoiLCAidXBkYXRlZF9hdCI6ICIyMDI2LTExLTA5VDA0OjU0OjA5LjE2MDY5NVoiLCAiaXNfYW5vbnltb3VzIjogZmFsc2V9fQ==; sb-auth-auth-token.1=CAiZnVsbF9uYW1lIjogImFuZGVyc29uMDAwMSIsICJpc3MiOiAiaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkiLCAibmFtZSI6ICJhbmRlcnNvbjAwMDEjMCIsICJwaG9uZV92ZXJpZmllZCI6IGZhbHNlLCAicGljdHVyZSI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAicHJvdmlkZXJfaWQiOiAiMjk2MDk4NDEwMzU4ODk4Njk5IiwgInN1YiI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcm5hbWUiOiAiQW5kZXJzb240MzEzIn0sICJpZGVudGl0aWVzIjogW3siaWRlbnRpdHlfaWQiOiAiZWFjNTEzMDQtOGMxMC00ZDdhLWIxMjUtNzk2ZDRhYWRiZDdlIiwgImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJ1c2VyX2lkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJpZGVudGl0eV9kYXRhIjogeyJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiBmYWxzZSwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJzdWIiOiAiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3In0sICJwcm92aWRlciI6ICJlbWFpbCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODUzNzRaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9LCB7ImlkZW50aXR5X2lkIjogIjdmMTJjOTY2LWU4OWItNDZkYy04MjY5LWY2NDllYWUxZWE0YSIsICJpZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcl9pZCI6ICI0ZGMzMzRjZC1iOWE0LTQ3MTctOGZmZS1iMDZiYjYyNzNkMTciLCAiaWRlbnRpdHlfZGF0YSI6IHsiYXZhdGFyX3VybCI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAiY3VzdG9tX2NsYWltcyI6IHsiZ2xvYmFsX25hbWUiOiAiQW5kZXJzb24ifSwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSIsICJlbWFpbF92ZXJpZmllZCI6IHRydWUsICJmdWxsX25hbWUiOiAiYW5kZXJzb24wMDAxIiwgImlzcyI6ICJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsICJuYW1lIjogImFuZGVyc29uMDAwMSMwIiwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJwaWN0dXJlIjogImh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsICJwcm92aWRlcl9pZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcm5hbWUiOiAiQW5kZXJzb240MzEzIn0sICJwcm92aWRlciI6ICJkaXNjb3JkIiwgImxhc3Rfc2lnbl9pbl9hdCI6ICIyMDI0LTEwLTIwVDIwOjE1OjUxLjYyNTUzM1oiLCAiY3JlYXRlZF9hdCI6ICIyMDI0LTEwLTIwVDIwOjE1OjUxLjYyNTU5MloiLCAidXBkYXRlZF9hdCI6ICIyMDI2LTExLTA5VDA0OjI4OjEzLjAzODMyOFoiLCAiZW1haWwiOiAiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIn1dLCAiY3JlYXRlZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4MzE4OVoiLCAidXBkYXRlZF9hdCI6ICIyMDI2LTExLTA5VDA0OjU0OjA5LjE2MDY5NVoiLCAiaXNfYW5vbnltb3VzIjogZmFsc2V9fQ==')
+DEFAULT_FALLBACK_TOKEN = 'aare7gnvapun'
+DEFAULT_INITIAL_COOKIE = os.getenv('ANITSU_COOKIE', 'sb-auth-auth-token.0=base64-eyJhY2Nlc3NfdG9rZW4iOiJleUpoYkdjaU9pSkZVekkxTmlJc0ltdHBaQ0k2SW1OaU9XUTBaRGt5TFRsak9XVXRORE5qTVMxaE16QmpMVGhsWTJWaU5qY3lNbU5sT0NJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcGMzTWlPaUpvZEhSd2N6b3ZMMkYxZEdndVlXNXBkSE4xTG0xdlpTOWhkWFJvTDNZeElpd2ljM1ZpSWpvaU5HUmpNek0wWTJRdFlqbGhOQzAwTnpFM0xUaG1abVV0WWpBMlltSTJNamN6WkRFM0lpd2lZWFZrSWpvaVlYVjBhR1Z1ZEdsallYUmxaQ0lzSW1WNGNDSTZNVGM1TkRJd056azVPU3dpYVdGMElqb3hOemswTWpBME16azVMQ0psYldGcGJDSTZJbVZrZFdGeVpHOWhibVJsY25OdmJqUXpRR2R0WVdsc0xtTnZiU0lzSW5Cb2IyNWxJam9pSWl3aVlYQndYMjFsZEdGa1lYUmhJanA3SW0xbGJXSmxjaUk2ZEhKMVpTd2ljSEp2ZG1sa1pYSWlPaUpsYldGcGJDSXNJbkJ5YjNacFpHVnljeUk2V3lKbGJXRnBiQ0lzSW1ScGMyTnZjbVFpWFgwc0luVnpaWEpmYldWMFlXUmhkR0VpT25zaVlYWmhkR0Z5SWpvaUlpd2lZWFpoZEdGeVgzVnliQ0k2SW1oMGRIQnpPaTh2WTJSdUxtUnBjMk52Y21SaGNIQXVZMjl0TDJGMllYUmhjbk12TWprMk1EazROREV3TXpVNE9EazROams1TDJVME9XUmtZall6WkRsak9XWmpZVGcwWkdVMFl6RTNOemRtWXpCaFl6ZG1MbkJ1WnlJc0ltTjFjM1J2YlY5amJHRnBiWE1pT25zaVoyeHZZbUZzWDI1aGJXVWlPaUpCYm1SbGNuTnZiaUo5TENKbGJXRnBiQ0k2SW1Wa2RXRnlaRzloYm1SbGNuTnZialF6UUdkdFlXbHNMbU52YlNJc0ltVnRZV2xzWDNabGNtbG1hV1ZrSWpwMGNuVmxMQ0ptZFd4c1gyNWhiV1VpT2lKaGJtUmxjbk52YmpBd01ERWlMQ0pwYzNNaU9pSm9kSFJ3Y3pvdkwyUnBjMk52Y21RdVkyOXRMMkZ3YVNJc0ltNWhiV1VpT2lKaGJtUmxjbk52YmpBd01ERWpNQ0lzSW5Cb2IyNWxYM1psY21sbWFXVmtJanBtWVd4elpTd2ljR2xqZEhWeVpTSTZJbWgwZEhCek9pOHZZMlJ1TG1ScGMyTnZjbVJoY0hBdVkyOXRMMkYyWVhSaGNuTXZNamsyTURrNE5ERXdNelU0T0RrNE5qazVMMlUwT1dSa1lqWXpaRGxqT1daallUZzBaR1UwWXpFM056ZG1ZekJoWXpkbUxuQnVaeUlzSW5CeWIzWnBaR1Z5WDJsa0lqb2lNamsyTURrNE5ERXdNelU0T0RrNE5qazVJaXdpYzNWaUlqb2lNamsyTURrNE5ERXdNelU0T0RrNE5qazVJaXdpZFhObGNtNWhiV1VpT2lKQmJtUmxjbk52YmpRek1UTWlmU3dpY205c1pTSTZJbUYxZEdobGJuUnBZMkYwWldRaUxDSmhZV3dpT2lKaFlXd3hJaXdpWVcxeUlqcGJleUp0WlhSb2IyUWlPaUp2WVhWMGFDSXNJblJwYldWemRHRnRjQ0k2TVRjNU5ESXdORE01T1gxZExDSnpaWE56YVc5dVgybGtJam9pTWprd00yWXpPVEF0WW1OaE5DMDBaR0UzTFRoaE5EVXROelZrWm1FMU1XSmhNbVZqSWl3aWFYTmZZVzV2Ym5sdGIzVnpJanBtWVd4elpYMC5yaE0tTjBadzNQSjI0LVhQS3phb2JUaWl2SDZuRGRrdFpkREVNc3NDclNMUXZTdlZFQnpvR1VJaVhTNm8yWWl5SlUxSmZSQ2N5U0ItUFhRNlM4cUJrdyIsInRva2VuX3R5cGUiOiJiZWFyZXIiLCJleHBpcmVzX2luIjozNjAwLCJleHBpcmVzX2F0IjoxNzk0MjA3OTk5LCJyZWZyZXNoX3Rva2VuIjoiYWFyZTdnbnZhcHVuIiwidXNlciI6eyJpZCI6IjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsImF1ZCI6ImF1dGhlbnRpY2F0ZWQiLCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImVtYWlsIjoiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwiZW1haWxfY29uZmlybWVkX2F0IjoiMjAyNC0wMi0xNVQwMzowNzoyOC4xODY3MTVaIiwicGhvbmUiOiIiLCJjb25maXJtZWRfYXQiOiIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCJsYXN0X3NpZ25faW5fYXQiOiIyMDI2LTExLTA5VDA2OjA2OjM5LjIzODY2OTU0NFoiLCJhcHBfbWV0YWRhdGEiOnsibWVtYmVyIjp0cnVlLCJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIiwiZGlzY29yZCJdfSwidXNlcl9tZXRhZGF0YSI6eyJhdmF0YXIiOiIiLCJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiNjNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwiY3VzdG9tX2NsYWltcyI6eyJnbG9iYWxfbmFtZSI6IkFuZGVyc29uIn0sImVtYWlsIjoiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZ1bGxfbmFtZSI6ImFuZGVyc29uMDAwMSIsImlzcyI6Imh0dHBzOi8vZ; sb-auth-auth-token.1=GlzY29yZC5jb20vYXBpIiwibmFtZSI6ImFuZGVyc29uMDAwMSMwIiwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJwaWN0dXJlIjoiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiNjNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwicHJvdmlkZXJfaWQiOiIyOTYwOTg0MTAzNTg4OTg2OTkiLCJzdWIiOiIyOTYwOTg0MTAzNTg4OTg2OTkiLCJ1c2VybmFtZSI6IkFuZGVyc29uNDMxMyJ9LCJpZGVudGl0aWVzIjpbeyJpZGVudGl0eV9pZCI6ImVhYzUxMzA0LThjMTAtNGQ3YS1iMTI1LTc5NmQ0YWFkYmQ3ZSIsImlkIjoiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3IiwidXNlcl9pZCI6IjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsImlkZW50aXR5X2RhdGEiOnsiZW1haWwiOiJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3In0sInByb3ZpZGVyIjoiZW1haWwiLCJsYXN0X3NpZ25faW5fYXQiOiIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NTM3NFoiLCJjcmVhdGVkX2F0IjoiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwidXBkYXRlZF9hdCI6IjIwMjQtMDItMTVUMDM6MDc6MjguMTg1NDIzWiIsImVtYWlsIjoiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIn0seyJpZGVudGl0eV9pZCI6IjdmMTJjOTY2LWU4OWItNDZkYy04MjY5LWY2NDllYWUxZWE0YSIsImlkIjoiMjk2MDk4NDEwMzU4ODk4Njk5IiwidXNlcl9pZCI6IjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsImlkZW50aXR5X2RhdGEiOnsiYXZhdGFyX3VybCI6Imh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsImN1c3RvbV9jbGFpbXMiOnsiZ2xvYmFsX25hbWUiOiJBbmRlcnNvbiJ9LCJlbWFpbCI6ImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmdWxsX25hbWUiOiJhbmRlcnNvbjAwMDEiLCJpc3MiOiJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsIm5hbWUiOiJhbmRlcnNvbjAwMDEjMCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwicGljdHVyZSI6Imh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsInByb3ZpZGVyX2lkIjoiMjk2MDk4NDEwMzU4ODk4Njk5Iiwic3ViIjoiMjk2MDk4NDEwMzU4ODk4Njk5In0sInByb3ZpZGVyIjoiZGlzY29yZCIsImxhc3Rfc2lnbl9pbl9hdCI6IjIwMjQtMTAtMjBUMjA6MTU6NTEuNjI1NTMzWiIsImNyZWF0ZWRfYXQiOiIyMDI0LTEwLTIwVDIwOjE1OjUxLjYyNTU5MloiLCJ1cGRhdGVkX2F0IjoiMjAyNi0xMS0wOVQwNjowNjozOC41MzQyNzZaIiwiZW1haWwiOiJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20ifV0sImNyZWF0ZWRfYXQiOiIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4MzE4OVoiLCJ1cGRhdGVkX2F0IjoiMjAyNi0xMS0wOVQwNjowNjozOS4yNDU4NTVaIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0sInByb3ZpZGVyX3Rva2VuIjoiTVRJM01EVTJNVEF3TVRZMU56UTNNVEF3TmcuNFRFanM2bXRybFp3S3E4R1F3aFd4WUhKeUpmbFVjIiwicHJvdmlkZXJfcmVmcmVzaF90b2tlbiI6IkRrMGxBaGpsR0tlZFlDQVZJNG4xeDl3QWR6N2o4eSJ9')
 refresh_token = ''
 current_cookie = DEFAULT_INITIAL_COOKIE
 cookie_lock = threading.Lock()
@@ -41,6 +41,12 @@ cache_files = {}
 cache_filler = {}
 cache_name = {}
 
+ONE_PIECE_OFFSETS = {
+    1: 0, 2: 8, 3: 30, 4: 47, 5: 60, 6: 69, 7: 91, 8: 130, 9: 143,
+    10: 195, 11: 226, 12: 325, 13: 381, 14: 481, 15: 516, 16: 578,
+    17: 627, 18: 745, 19: 778, 20: 876, 21: 891, 22: 1084, 23: 1154
+}
+
 def norm(text):
     if not text:
         return ''
@@ -49,7 +55,20 @@ def norm(text):
     return ' '.join(t.split())
 
 def init_tokens():
-    global refresh_token
+    global refresh_token, current_cookie
+    local_cfg = r'F:\Games\AniGUI-v3.4.1\anitsu_config.json'
+    if os.path.exists(local_cfg):
+        try:
+            with open(local_cfg, 'r', encoding='utf-8') as f:
+                cfg_d = json.load(f)
+                live_ck = cfg_d.get('cookie')
+                if live_ck:
+                    with cookie_lock:
+                        current_cookie = live_ck
+                    print(f"[Anitsu Cloud] Loaded live cookie from AniGUI ({len(live_ck)} chars)")
+        except Exception:
+            pass
+
     if os.path.exists(TOKEN_CACHE_FILE):
         try:
             with open(TOKEN_CACHE_FILE, 'r', encoding='utf-8') as f:
@@ -110,7 +129,7 @@ def refresh_session():
                 current_cookie = cookie_str
             print(f"[Anitsu Cloud] Session token refreshed! User: {data.get('user', {}).get('email')}")
         else:
-            print(f"[Anitsu Cloud] Refresh failed with status {res.status_code}: {res.text}")
+            print(f"[Anitsu Cloud] Refresh returned {res.status_code}. Using current active cookie.")
     except Exception as e:
         print("[Anitsu Cloud] Error refreshing token:", e)
 
@@ -306,82 +325,242 @@ def resolve_stremio_title(video_id, prefer_type="series"):
                 pass
     return None
 
-def find_episode_file(anime, season_num, ep_num):
+def find_all_episode_files(anime, season_num, ep_num, video_id=""):
     root_folder = f"{anime['p']}/{anime['n']}"
     is_movie = anime.get('t') == 'movie' or 'Filmes' in anime.get('p', '')
-    
-    def search_folder(folder, target_season, target_ep, depth=0):
-        if depth > 3:
-            return None
+
+    target_eps = [ep_num]
+    # Handle One Piece season-to-absolute mapping
+    if 'one piece' in anime['n'].lower() or 'tt0388629' in video_id:
+        if season_num > 1:
+            base_offset = ONE_PIECE_OFFSETS.get(season_num, 0)
+            abs_ep = base_offset + ep_num
+            target_eps = [abs_ep, abs_ep + 1, abs_ep - 1]
+        elif season_num == 1 and ep_num > 60:
+            target_eps = [ep_num]
+
+    found_releases = []
+
+    def walk(folder, depth=0):
+        if depth > 4:
+            return
         files = anitsu_list_files(folder)
         if not files:
-            return None
-            
+            return
+
         video_files = [f for f in files if not f.get('is_directory') and f.get('name', '').lower().endswith(('.mkv', '.mp4'))]
         if video_files:
             if is_movie:
-                # For movies, pick the best video file
-                def score_movie(vf):
-                    n = vf.get('name', '').lower()
-                    score = 0
-                    if '1080' in n: score += 10
-                    if 'bluray' in n or 'bd' in n: score += 5
-                    if 'dual' in n or 'dublado' in n: score += 5
-                    return score
-                video_files.sort(key=score_movie, reverse=True)
-                return f"{folder}/{video_files[0]['name']}", video_files[0]
-
-            patterns = [
-                re.compile(rf'[\s\-_]0*{target_ep}\b'),
-                re.compile(rf'[eE]0*{target_ep}\b'),
-                re.compile(rf'ep\s*0*{target_ep}\b', re.I),
-                re.compile(rf'epis[oó]dio\s*0*{target_ep}\b', re.I)
-            ]
-            for pat in patterns:
                 for vf in video_files:
-                    if pat.search(vf['name']):
-                        return f"{folder}/{vf['name']}", vf
-            if len(video_files) == 1 and target_ep == 1:
-                return f"{folder}/{video_files[0]['name']}", video_files[0]
-                
+                    found_releases.append((f"{folder}/{vf['name']}", vf))
+                return
+
+            for t_ep in target_eps:
+                ep_patterns = [
+                    re.compile(rf'(?:^|[^\d])0*{t_ep}(?:[^\d]|$)'),
+                    re.compile(rf'[eE]0*{t_ep}(?:[^\d]|$)'),
+                    re.compile(rf'ep\s*0*{t_ep}(?:[^\d]|$)', re.I)
+                ]
+                for vf in video_files:
+                    name = vf['name']
+                    # Clean crc32 checksums like [16892632]
+                    name_clean = re.sub(r'\[[a-fA-F0-9]{8}\]', '', name)
+                    
+                    # Filter wrong seasons if file explicitly specifies S02 when we want S01
+                    s_file_match = re.search(r'\b(?:s|season)\s*0?(\d+)\b', name_clean.lower())
+                    if s_file_match and season_num <= 10 and 'one piece' not in anime['n'].lower():
+                        if int(s_file_match.group(1)) != season_num:
+                            continue
+
+                    for pat in ep_patterns:
+                        if pat.search(name_clean):
+                            found_releases.append((f"{folder}/{name}", vf))
+                            return # found in this folder
+
         subdirs = [f['name'] for f in files if f.get('is_directory')]
-        if not subdirs:
-            return None
-            
-        if depth == 0 and len(subdirs) > 1 and not is_movie:
-            filtered = [s for s in subdirs if not any(x in s.lower() for x in ['ova', 'chuugakkou'])]
-            pat = re.compile(rf'(?:season|temporada|s|part)\s*0?{target_season}\b', re.I)
-            matched = [s for s in filtered if pat.search(s)]
-            if not matched and target_season == 1:
-                matched = [s for s in filtered if not re.search(r'(?:season|temporada|s|part)\s*[2-9]\b', s, re.I)]
-            if matched:
-                subdirs = matched
-                
-        def score_dir(dname):
-            d = dname.lower()
-            score = 0
-            if '1080' in d: score += 10
-            if 'bd' in d or 'blu-ray' in d or 'bluray' in d: score += 5
-            if 'anipakku' in d: score += 3
-            if 'dual' in d: score += 3
-            if '720' in d: score -= 5
-            return score
-            
-        subdirs.sort(key=score_dir, reverse=True)
         for s in subdirs:
-            res = search_folder(f"{folder}/{s}", target_season, target_ep, depth + 1)
-            if res:
-                return res
-        return None
-        
-    return search_folder(root_folder, season_num, ep_num, 0)
+            s_lower = s.lower()
+            if any(bad in s_lower for bad in ['filme', 'movie', 'live action', 'série', 'taose', 'especiais', 'ova']):
+                continue
+
+            # Check season folder
+            s_dir_match = re.search(r'\b(?:s|season|temporada)\s*0?(\d+)\b', s_lower)
+            if s_dir_match and season_num <= 10 and 'one piece' not in anime['n'].lower():
+                if int(s_dir_match.group(1)) != season_num:
+                    continue
+
+            # Check range folder e.g. [878-1088] or 01-130
+            rng = re.findall(r'(\d+)[\s\-_]+(\d+)', s)
+            in_range = False
+            has_range = False
+            for st_str, en_str in rng:
+                st, en = int(st_str), int(en_str)
+                if st > en: st, en = en, st
+                if en >= 1900 and en <= 2030 and st >= 1900:
+                    continue
+                has_range = True
+                for t_ep in target_eps:
+                    if st <= t_ep <= en:
+                        in_range = True
+                        break
+                if in_range:
+                    break
+
+            if has_range and not in_range:
+                continue
+
+            walk(f"{folder}/{s}", depth + 1)
+
+    walk(root_folder, 0)
+
+    # Sort releases: 1080p, BD, Netflix, Web, Dual first
+    def score_rel(item):
+        p, vf = item
+        n = vf.get('name', '').lower()
+        pl = p.lower()
+        score = 0
+        if '1080' in n or '1080' in pl: score += 20
+        if 'bluray' in n or 'bd' in n or 'bd' in pl: score += 15
+        if 'dual' in n or 'dublado' in n or 'dual' in pl: score += 12
+        if 'netflix' in pl or 'nf' in n: score += 12
+        if 'opex' in pl: score += 10
+        if 'cr' in pl or 'crunchyroll' in pl: score += 8
+        if 'kyoshiro' in pl: score += 15
+        if 'sennin' in pl: score += 14
+        if '720' in n: score -= 10
+        if '480' in n or '576' in n: score -= 20
+        return score
+
+    found_releases.sort(key=score_rel, reverse=True)
+    return found_releases
+
+def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=False, is_proxy=False):
+    filename = vf.get('name', '')
+    fn = filename.lower()
+    pl = remote_path.lower()
+
+    # 1. Resolution & Left Badge
+    if '2160' in fn or '4k' in fn or '4k' in pl:
+        res = '2160P ⚡'
+    elif '720' in fn or '720' in pl:
+        res = '720P ⚡'
+    elif '480' in fn or 'dvd' in fn or '576' in fn or 'dvd' in pl:
+        res = '480P ⚡'
+    else:
+        res = '1080P ⚡'
+
+    if 'remux' in fn or 'remux' in pl:
+        src = '(Remux) ★★★'
+    elif 'bluray' in fn or 'bd' in fn or 'bd' in pl:
+        src = '(Bluray) ★★★'
+    elif 'web' in fn or 'nf' in fn or 'netflix' in pl or 'cr' in pl:
+        src = '(Web-dl) ★★★'
+    elif 'hdtv' in fn or 'hdtv' in pl:
+        src = '(Hdtv) ★★'
+    elif 'dvd' in fn or 'dvd' in pl:
+        src = '(Dvdrip) ★'
+    else:
+        src = '★★★'
+
+    if is_proxy:
+        name = f"{res.replace('⚡', '🛡️')}\n(Proxy) ★★"
+    else:
+        name = f"{res}\n{src}"
+
+    # 2. Codec
+    if 'hevc' in fn or 'x265' in fn or 'h265' in fn or 'h.265' in fn:
+        codec = 'HEVC 10bit'
+    elif 'avc' in fn or 'x264' in fn or 'h264' in fn or 'h.264' in fn:
+        codec = 'AVC'
+    else:
+        codec = 'AVC'
+
+    # 3. Audio & Channels
+    if 'ddp' in fn:
+        audio = '♫ DDP 5.1'
+    elif '5.1' in fn:
+        audio = '♫ DD 5.1'
+    elif 'flac' in fn:
+        audio = '♫ FLAC 2.0'
+    elif 'aac' in fn:
+        audio = '♫ AAC 2.0'
+    else:
+        audio = '♫ DD 2.0'
+
+    is_dual = 'dual' in fn or 'dublado' in fn or 'dual' in pl or 'dublado' in pl
+    if is_dual:
+        audio += ' · Dual Áudio'
+    else:
+        audio += ' · Legendado PT-BR'
+
+    # 4. Group / Release Name
+    group_str = ""
+    if 'netflix' in pl:
+        group_str = " · Netflix DUAL"
+    elif 'opex' in pl:
+        group_str = " · Opex FHD"
+    elif 'kyoshiro' in pl:
+        group_str = " · Kyoshiro BD"
+    elif 'sennin' in pl:
+        group_str = " · Sennin RMZ"
+    elif 'harlley' in pl:
+        group_str = " · Harlley DUAL"
+    elif 'mattmurdock' in pl:
+        group_str = " · Mattmurdock DUAL"
+    elif 'shakaw' in pl:
+        group_str = " · ShaKaw"
+    elif 'cr' in pl:
+        group_str = " · Crunchyroll"
+    else:
+        m_grp = re.search(r'-([a-zA-Z0-9_]+)(?:\.[a-zA-Z0-9]+)?$', filename)
+        if m_grp:
+            group_str = f" · {m_grp.group(1)}"
+
+    # 5. Clean Title
+    clean_title = re.sub(r'\[[^\]]*\]', '', anime['n']).strip()
+    clean_title = re.sub(r'\(\d{4}[^\)]*\)', '', clean_title).strip()
+
+    # 6. Size
+    size_bytes = vf.get('size', 0)
+    size_mb = size_bytes / (1024 * 1024) if size_bytes else 0
+    if size_mb >= 1024:
+        size_str = f"{size_mb/1024:.2f} GB"
+    elif size_mb > 0:
+        size_str = f"{int(size_mb)} MB"
+    else:
+        size_str = "HD"
+
+    # 7. Cloud provider tag
+    if is_proxy:
+        cloud_tag = "☁️ Nuvem Render [Proxy 24/7]"
+    else:
+        cloud_tag = "☁️ Nuvem Anitsu [Sem Espera / Sem Torrent]"
+
+    # 8. Languages & Player flags
+    if is_dual:
+        lang_str = "✔ PT-BR (Dublado) · JA · SUB"
+    else:
+        lang_str = "✔ JA · Legendado PT-BR · SUB"
+    player_str = "✔ EXOPLAYER SAFE"
+
+    if is_movie:
+        line1 = f"{clean_title} [Filme]{group_str}"
+    else:
+        line1 = f"{clean_title} S{season_num:02d} E{ep_num:02d}{group_str}"
+
+    line2 = f"{codec} {audio}"
+    line3 = f"⚡ {size_str} · {cloud_tag}"
+    line4 = f"{lang_str} {player_str}"
+
+    title = f"{line1}\n{line2}\n{line3}\n{line4}"
+    return name, title
 
 def get_anitsu_manifest():
     return {
         "id": "community.anitsu.cloud",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "name": "☁️ Anitsu Nuvem [PT-BR]",
-        "description": "5.700+ Animes, Desenhos Animados, Filmes e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu!",
+        "description": "5.700+ Animes, Desenhos Animados, Filmes e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu com múltiplas opções de releases!",
         "logo": "https://nuvem.anitsu.moe/icon.png",
         "resources": ["catalog", "meta", "stream"],
         "types": ["anime", "series", "movie"],
@@ -523,105 +702,6 @@ def meta(type_: str, video_id: str):
         }
     }
 
-def format_stream_card(anime, vf, season_num, ep_num, is_movie=False, is_proxy=False):
-    filename = vf.get('name', '')
-    fn = filename.lower()
-
-    # 1. Resolution & Left Badge
-    if '2160' in fn or '4k' in fn:
-        res = '2160P ⚡'
-    elif '720' in fn:
-        res = '720P ⚡'
-    elif '480' in fn or 'dvd' in fn:
-        res = '480P ⚡'
-    else:
-        res = '1080P ⚡'
-
-    if 'remux' in fn:
-        src = '(Remux) ★★★'
-    elif 'bluray' in fn or 'bd' in fn:
-        src = '(Bluray) ★★★'
-    elif 'web' in fn or 'nf' in fn:
-        src = '(Web-dl) ★★★'
-    elif 'hdtv' in fn:
-        src = '(Hdtv) ★★'
-    elif 'dvd' in fn:
-        src = '(Dvdrip) ★'
-    else:
-        src = '★★★'
-
-    if is_proxy:
-        name = f"{res.replace('⚡', '🛡️')}\n(Proxy) ★★"
-    else:
-        name = f"{res}\n{src}"
-
-    # 2. Codec
-    if 'hevc' in fn or 'x265' in fn or 'h265' in fn or 'h.265' in fn:
-        codec = 'HEVC 10bit'
-    elif 'avc' in fn or 'x264' in fn or 'h264' in fn or 'h.264' in fn:
-        codec = 'AVC'
-    else:
-        codec = 'AVC'
-
-    # 3. Audio & Channels
-    if 'ddp' in fn or '5.1' in fn:
-        audio = '♫ DD 5.1'
-    elif 'flac' in fn:
-        audio = '♫ FLAC 2.0'
-    elif 'aac' in fn:
-        audio = '♫ AAC 2.0'
-    else:
-        audio = '♫ DD 2.0'
-
-    if 'dual' in fn:
-        audio += ' · Dual Áudio'
-    elif 'dublado' in fn:
-        audio += ' · Dublado PT-BR'
-
-    # 4. Group
-    m_grp = re.search(r'-([a-zA-Z0-9_]+)(?:\.[a-zA-Z0-9]+)?$', filename)
-    group_str = f" · {m_grp.group(1)}" if m_grp else ""
-
-    # 5. Clean Title
-    clean_title = re.sub(r'\[[^\]]*\]', '', anime['n']).strip()
-    clean_title = re.sub(r'\(\d{4}[^\)]*\)', '', clean_title).strip()
-
-    # 6. Size
-    size_bytes = vf.get('size', 0)
-    size_mb = size_bytes / (1024 * 1024) if size_bytes else 0
-    if size_mb >= 1024:
-        size_str = f"{size_mb/1024:.2f} GB"
-    elif size_mb > 0:
-        size_str = f"{int(size_mb)} MB"
-    else:
-        size_str = "HD"
-
-    # 7. Cloud provider tag
-    if is_proxy:
-        cloud_tag = "☁️ Nuvem Render [Proxy 24/7]"
-    else:
-        cloud_tag = "☁️ Nuvem Anitsu [Sem Espera / Sem Torrent]"
-
-    # 8. Languages & Player flags
-    has_dual = 'dual' in fn or 'dublado' in fn or 'pt-br' in anime.get('p', '').lower()
-    if has_dual:
-        lang_str = "✔ PT-BR (Dublado) · JA · SUB"
-    else:
-        lang_str = "✔ JA · Legendado PT-BR · SUB"
-    player_str = "✔ EXOPLAYER SAFE"
-
-    if is_movie:
-        line1 = f"{clean_title} [Filme]{group_str}"
-    else:
-        line1 = f"{clean_title} S{season_num:02d} E{ep_num:02d}{group_str}"
-
-    line2 = f"{codec} {audio}"
-    line3 = f"⚡ {size_str} · {cloud_tag}"
-    line4 = f"{lang_str} {player_str}"
-
-    title = f"{line1}\n{line2}\n{line3}\n{line4}"
-    return name, title
-
 @app.get("/stream/{type_}/{video_id}.json")
 def stream(type_: str, video_id: str, request: Request):
     parts = video_id.split(':')
@@ -657,53 +737,57 @@ def stream(type_: str, video_id: str, request: Request):
     if not matched_anime:
         return {"streams": []}
 
-    res = find_episode_file(matched_anime, season_num, ep_num)
-    if not res:
+    res_list = find_all_episode_files(matched_anime, season_num, ep_num, video_id=video_id)
+    if not res_list:
         return {"streams": []}
-
-    remote_path, vf = res
-    card_name_direct, card_title_direct = format_stream_card(matched_anime, vf, season_num, ep_num, is_movie=is_movie, is_proxy=False)
-    card_name_proxy, card_title_proxy = format_stream_card(matched_anime, vf, season_num, ep_num, is_movie=is_movie, is_proxy=True)
-    
-    # 1. Direct stream URL with proxyHeaders (streams straight from Anitsu Nuvem!)
-    direct_url = f"https://nuvem.anitsu.moe/api/download?path={urllib.parse.quote(remote_path)}"
-    
-    # 2. Proxy fallback URL via this host
-    base_url = str(request.base_url).rstrip('/')
-    proxy_url = f"{base_url}/proxy-stream?path={urllib.parse.quote(remote_path)}"
 
     with cookie_lock:
         ck = current_cookie
 
-    return {
-        "streams": [
-            {
-                "name": card_name_direct,
-                "title": card_title_direct,
-                "url": direct_url,
-                "behaviorHints": {
-                    "notWebReady": False,
-                    "bingeGroup": f"anitsu-{matched_anime['id']}",
-                    "proxyHeaders": {
-                        "request": {
-                            "Cookie": ck,
-                            "User-Agent": UA,
-                            "Accept": "*/*"
-                        }
+    base_url = str(request.base_url).rstrip('/')
+    streams = []
+
+    # Display up to 5 best distinct releases
+    for r_idx, (remote_path, vf) in enumerate(res_list[:5]):
+        card_name_direct, card_title_direct = format_stream_card(
+            matched_anime, vf, remote_path, season_num, ep_num, is_movie=is_movie, is_proxy=False
+        )
+        card_name_proxy, card_title_proxy = format_stream_card(
+            matched_anime, vf, remote_path, season_num, ep_num, is_movie=is_movie, is_proxy=True
+        )
+
+        direct_url = f"https://nuvem.anitsu.moe/api/download?path={urllib.parse.quote(remote_path)}"
+        proxy_url = f"{base_url}/proxy-stream?path={urllib.parse.quote(remote_path)}"
+
+        streams.append({
+            "name": card_name_direct,
+            "title": card_title_direct,
+            "url": direct_url,
+            "behaviorHints": {
+                "notWebReady": False,
+                "bingeGroup": f"anitsu-{matched_anime['id']}-{r_idx}",
+                "proxyHeaders": {
+                    "request": {
+                        "Cookie": ck,
+                        "User-Agent": UA,
+                        "Accept": "*/*"
                     }
                 }
-            },
-            {
+            }
+        })
+        # Add proxy option for the best release
+        if r_idx == 0:
+            streams.append({
                 "name": card_name_proxy,
                 "title": card_title_proxy,
                 "url": proxy_url,
                 "behaviorHints": {
                     "notWebReady": False,
-                    "bingeGroup": f"anitsu-{matched_anime['id']}-proxy"
+                    "bingeGroup": f"anitsu-{matched_anime['id']}-proxy-{r_idx}"
                 }
-            }
-        ]
-    }
+            })
+
+    return {"streams": streams}
 
 @app.get("/proxy-stream")
 def proxy_stream(path: str, request: Request):
@@ -773,11 +857,21 @@ def filler_stream(type_: str, video_id: str):
     if len(parts) < 2:
         return {"streams": []}
     series_id = parts[0]
+    season_num = 1
+    ep_num = 1
     if series_id.startswith('kitsu'):
         series_id = f'{parts[0]}:{parts[1]}'
         ep_num = int(parts[2]) if len(parts) >= 3 else int(parts[1])
     else:
-        ep_num = int(parts[2]) if len(parts) >= 3 else int(parts[1])
+        if len(parts) >= 3:
+            season_num = int(parts[1])
+            ep_num = int(parts[2])
+        else:
+            ep_num = int(parts[1])
+
+    if 'tt0388629' in series_id and season_num > 1:
+        base_offset = ONE_PIECE_OFFSETS.get(season_num, 0)
+        ep_num = base_offset + ep_num
 
     slug = KNOWN_SLUGS.get(series_id) or norm(resolve_stremio_title(video_id, prefer_type="series")).replace(' ', '-')
     filler_data = get_filler_data(slug)
