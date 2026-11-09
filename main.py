@@ -516,10 +516,7 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
     # 1. Resolution & Left Badge
     if is_hardsub:
         res_tag = '1080P' if ('1080' in fn or '1080' in pl) else ('720P' if ('720' in fn or '720' in pl) else '480P')
-        if is_proxy:
-            name = f"HARDSUB 🛡️\n({res_tag} Proxy) ★★"
-        else:
-            name = f"HARDSUB ⚡\n({res_tag} Fansub) ★★★"
+        name = f"HARDSUB ⚡\n({res_tag} Fansub) ★★★"
     else:
         if '2160' in fn or '4k' in fn or '4k' in pl:
             res = '2160P ⚡'
@@ -543,10 +540,7 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
         else:
             src = '★★★'
 
-        if is_proxy:
-            name = f"{res.replace('⚡', '🛡️')}\n(Proxy) ★★"
-        else:
-            name = f"{res}\n{src}"
+        name = f"{res}\n{src}"
 
     # 2. Codec
     if 'hevc' in fn or 'x265' in fn or 'h265' in fn or 'h.265' in fn:
@@ -615,10 +609,7 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
         size_str = "HD"
 
     # 7. Cloud provider tag
-    if is_proxy:
-        cloud_tag = "☁️ Nuvem Render [Proxy 24/7]"
-    else:
-        cloud_tag = "☁️ Nuvem Anitsu [Sem Espera / Sem Torrent]"
+    cloud_tag = "☁️ Nuvem Anitsu [Alta Velocidade 24/7]"
 
     # 8. Languages & Player flags
     if is_hardsub:
@@ -853,44 +844,20 @@ def stream(type_: str, video_id: str, request: Request):
         chosen_releases.append(hardsub_rel)
 
     for r_idx, (remote_path, vf) in enumerate(chosen_releases):
-        card_name_direct, card_title_direct = format_stream_card(
+        card_name, card_title = format_stream_card(
             matched_anime, vf, remote_path, season_num, ep_num, is_movie=is_movie, is_proxy=False
         )
-        card_name_proxy, card_title_proxy = format_stream_card(
-            matched_anime, vf, remote_path, season_num, ep_num, is_movie=is_movie, is_proxy=True
-        )
-
-        direct_url = f"https://nuvem.anitsu.moe/api/download?path={urllib.parse.quote(remote_path)}"
         proxy_url = f"{base_url}/proxy-stream?path={urllib.parse.quote(remote_path)}"
 
         streams.append({
-            "name": card_name_direct,
-            "title": card_title_direct,
-            "url": direct_url,
+            "name": card_name,
+            "title": card_title,
+            "url": proxy_url,
             "behaviorHints": {
                 "notWebReady": False,
-                "bingeGroup": f"anitsu-{matched_anime['id']}-{r_idx}",
-                "proxyHeaders": {
-                    "request": {
-                        "Cookie": ck,
-                        "User-Agent": UA,
-                        "Accept": "*/*"
-                    }
-                }
+                "bingeGroup": f"anitsu-{matched_anime['id']}-{r_idx}"
             }
         })
-        # Add proxy option for the best release or hardsub
-        is_rel_hardsub = 'hardsub' in remote_path.lower() or 'hardsub' in vf.get('name', '').lower()
-        if r_idx == 0 or is_rel_hardsub:
-            streams.append({
-                "name": card_name_proxy,
-                "title": card_title_proxy,
-                "url": proxy_url,
-                "behaviorHints": {
-                    "notWebReady": False,
-                    "bingeGroup": f"anitsu-{matched_anime['id']}-proxy-{r_idx}"
-                }
-            })
 
     return {"streams": streams}
 
@@ -904,13 +871,41 @@ def proxy_stream(path: str, request: Request):
     if range_header:
         headers['Range'] = range_header
 
-    req = requests.get(anitsu_url, headers=headers, stream=True)
-    response_headers = {}
-    for h in ['Content-Type', 'Content-Length', 'Content-Range', 'Accept-Ranges', 'Content-Disposition']:
+    try:
+        req = requests.get(anitsu_url, headers=headers, stream=True, timeout=15)
+        if req.status_code == 401:
+            refresh_session()
+            with cookie_lock:
+                ck = current_cookie
+            headers['Cookie'] = ck
+            req = requests.get(anitsu_url, headers=headers, stream=True, timeout=15)
+    except Exception as e:
+        return Response(status_code=502, content="Failed to connect to cloud storage")
+
+    response_headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': '*',
+        'Accept-Ranges': 'bytes'
+    }
+    for h in ['Content-Type', 'Content-Length', 'Content-Range', 'Content-Disposition']:
         if h in req.headers:
             response_headers[h] = req.headers[h]
 
-    return StreamingResponse(req.iter_content(chunk_size=65536), status_code=req.status_code, headers=response_headers)
+    def content_generator():
+        try:
+            for chunk in req.iter_content(chunk_size=131072):
+                if chunk:
+                    yield chunk
+        finally:
+            req.close()
+
+    media_type = req.headers.get('Content-Type', 'video/mp4')
+    return StreamingResponse(
+        content_generator(),
+        status_code=req.status_code,
+        headers=response_headers,
+        media_type=media_type
+    )
 
 # --- Filler Guide Addon Routes ---
 KNOWN_SLUGS = {
