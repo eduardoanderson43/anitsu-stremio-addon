@@ -269,17 +269,41 @@ def find_anime_by_title(title):
     cleaned = norm(title)
     if cleaned in title_index:
         return title_index[cleaned]
-    tokens = set(cleaned.split())
+
+    cleaned_no_movie = re.sub(r'\b(the movie|movie|filme|season \d+|s\d+)\b', '', cleaned).strip()
+    if cleaned_no_movie and cleaned_no_movie in title_index:
+        return title_index[cleaned_no_movie]
+
+    cleaned_tokens = set(cleaned.split())
+
     best_match = None
+    best_len = 0
+
+    for alias, anime in title_index.items():
+        if len(alias) < 3:
+            continue
+        if re.search(r'\b' + re.escape(alias) + r'\b', cleaned):
+            if len(alias) > best_len:
+                best_len = len(alias)
+                best_match = anime
+        elif re.search(r'\b' + re.escape(cleaned) + r'\b', alias):
+            if len(cleaned) > best_len:
+                best_len = len(cleaned)
+                best_match = anime
+
+    if best_match:
+        return best_match
+
     best_score = 0
     for alias, anime in title_index.items():
-        if cleaned in alias or alias in cleaned:
-            return anime
+        if len(alias) < 4:
+            continue
         alias_tokens = set(alias.split())
-        common = len(tokens.intersection(alias_tokens))
-        if common > best_score and common >= min(len(tokens), 2):
+        common = len(cleaned_tokens.intersection(alias_tokens))
+        if common > best_score and common >= min(len(cleaned_tokens), 2):
             best_score = common
             best_match = anime
+
     return best_match
 
 def anitsu_list_files(path):
@@ -291,6 +315,12 @@ def anitsu_list_files(path):
     headers = {'Cookie': ck, 'User-Agent': UA, 'Accept': '*/*'}
     try:
         r = requests.get(url, headers=headers, timeout=8)
+        if r.status_code == 401:
+            refresh_session()
+            with cookie_lock:
+                ck = current_cookie
+            headers['Cookie'] = ck
+            r = requests.get(url, headers=headers, timeout=8)
         if r.status_code == 200:
             files = r.json().get('files', [])
             cache_files[path] = files
@@ -560,7 +590,7 @@ def get_anitsu_manifest():
         "id": "community.anitsu.cloud",
         "version": "1.2.0",
         "name": "☁️ Anitsu Nuvem [PT-BR]",
-        "description": "5.700+ Animes, Desenhos Animados, Filmes e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu com múltiplas opções de releases!",
+        "description": "5.800+ Animes, Filmes de Anime, Desenhos e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu com múltiplas opções de releases!",
         "logo": "https://nuvem.anitsu.moe/icon.png",
         "resources": ["catalog", "meta", "stream"],
         "types": ["anime", "series", "movie"],
@@ -586,7 +616,7 @@ def get_anitsu_manifest():
             },
             {
                 "id": "anitsu-filmes",
-                "name": "🎬 Anitsu · Filmes Animados (PT-BR)",
+                "name": "🎬 Anitsu · Filmes de Animes & Animações (PT-BR)",
                 "type": "movie",
                 "extra": [
                     {"name": "search", "isRequired": False},
@@ -615,7 +645,7 @@ def catalog(type_: str, catalog_id: str, search: str = "", skip: int = 0):
     if catalog_id == "anitsu-desenhos":
         filtered = [a for a in animes_list if a.get('c') == 'desenhos' and a.get('t') == 'series']
     elif catalog_id == "anitsu-filmes":
-        filtered = [a for a in animes_list if a.get('c') == 'desenhos' and a.get('t') == 'movie']
+        filtered = [a for a in animes_list if a.get('t') == 'movie']
     elif catalog_id == "anitsu-doramas":
         filtered = [a for a in animes_list if a.get('c') == 'doramas']
     elif catalog_id == "anitsu-anime" or catalog_id == "anitsu-popular":
@@ -717,7 +747,8 @@ def stream(type_: str, video_id: str, request: Request):
             season_num = int(parts[2])
             ep_num = int(parts[3])
     elif video_id.startswith('kitsu'):
-        title = resolve_stremio_title(video_id, prefer_type="series")
+        prefer = "movie" if is_movie else "series"
+        title = resolve_stremio_title(video_id, prefer_type=prefer)
         if title:
             matched_anime = find_anime_by_title(title)
         season_num = 1
@@ -736,6 +767,9 @@ def stream(type_: str, video_id: str, request: Request):
 
     if not matched_anime:
         return {"streams": []}
+
+    if matched_anime.get('t') == 'movie':
+        is_movie = True
 
     res_list = find_all_episode_files(matched_anime, season_num, ep_num, video_id=video_id)
     if not res_list:
