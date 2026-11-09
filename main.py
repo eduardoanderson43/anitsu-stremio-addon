@@ -522,6 +522,105 @@ def meta(type_: str, video_id: str):
         }
     }
 
+def format_stream_card(anime, vf, season_num, ep_num, is_movie=False, is_proxy=False):
+    filename = vf.get('name', '')
+    fn = filename.lower()
+
+    # 1. Resolution & Left Badge
+    if '2160' in fn or '4k' in fn:
+        res = '2160P ⚡'
+    elif '720' in fn:
+        res = '720P ⚡'
+    elif '480' in fn or 'dvd' in fn:
+        res = '480P ⚡'
+    else:
+        res = '1080P ⚡'
+
+    if 'remux' in fn:
+        src = '(Remux) ★★★'
+    elif 'bluray' in fn or 'bd' in fn:
+        src = '(Bluray) ★★★'
+    elif 'web' in fn or 'nf' in fn:
+        src = '(Web-dl) ★★★'
+    elif 'hdtv' in fn:
+        src = '(Hdtv) ★★'
+    elif 'dvd' in fn:
+        src = '(Dvdrip) ★'
+    else:
+        src = '★★★'
+
+    if is_proxy:
+        name = f"{res.replace('⚡', '🛡️')}\n(Proxy) ★★"
+    else:
+        name = f"{res}\n{src}"
+
+    # 2. Codec
+    if 'hevc' in fn or 'x265' in fn or 'h265' in fn or 'h.265' in fn:
+        codec = 'HEVC 10bit'
+    elif 'avc' in fn or 'x264' in fn or 'h264' in fn or 'h.264' in fn:
+        codec = 'AVC'
+    else:
+        codec = 'AVC'
+
+    # 3. Audio & Channels
+    if 'ddp' in fn or '5.1' in fn:
+        audio = '♫ DD 5.1'
+    elif 'flac' in fn:
+        audio = '♫ FLAC 2.0'
+    elif 'aac' in fn:
+        audio = '♫ AAC 2.0'
+    else:
+        audio = '♫ DD 2.0'
+
+    if 'dual' in fn:
+        audio += ' · Dual Áudio'
+    elif 'dublado' in fn:
+        audio += ' · Dublado PT-BR'
+
+    # 4. Group
+    m_grp = re.search(r'-([a-zA-Z0-9_]+)(?:\.[a-zA-Z0-9]+)?$', filename)
+    group_str = f" · {m_grp.group(1)}" if m_grp else ""
+
+    # 5. Clean Title
+    clean_title = re.sub(r'\[[^\]]*\]', '', anime['n']).strip()
+    clean_title = re.sub(r'\(\d{4}[^\)]*\)', '', clean_title).strip()
+
+    # 6. Size
+    size_bytes = vf.get('size', 0)
+    size_mb = size_bytes / (1024 * 1024) if size_bytes else 0
+    if size_mb >= 1024:
+        size_str = f"{size_mb/1024:.2f} GB"
+    elif size_mb > 0:
+        size_str = f"{int(size_mb)} MB"
+    else:
+        size_str = "HD"
+
+    # 7. Cloud provider tag
+    if is_proxy:
+        cloud_tag = "☁️ Nuvem Render [Proxy 24/7]"
+    else:
+        cloud_tag = "☁️ Nuvem Anitsu [Sem Espera / Sem Torrent]"
+
+    # 8. Languages & Player flags
+    has_dual = 'dual' in fn or 'dublado' in fn or 'pt-br' in anime.get('p', '').lower()
+    if has_dual:
+        lang_str = "✔ PT-BR (Dublado) · JA · SUB"
+    else:
+        lang_str = "✔ JA · Legendado PT-BR · SUB"
+    player_str = "✔ EXOPLAYER SAFE"
+
+    if is_movie:
+        line1 = f"{clean_title} [Filme]{group_str}"
+    else:
+        line1 = f"{clean_title} S{season_num:02d} E{ep_num:02d}{group_str}"
+
+    line2 = f"{codec} {audio}"
+    line3 = f"⚡ {size_str} · {cloud_tag}"
+    line4 = f"{lang_str} {player_str}"
+
+    title = f"{line1}\n{line2}\n{line3}\n{line4}"
+    return name, title
+
 @app.get("/stream/{type_}/{video_id}.json")
 def stream(type_: str, video_id: str, request: Request):
     parts = video_id.split(':')
@@ -562,10 +661,8 @@ def stream(type_: str, video_id: str, request: Request):
         return {"streams": []}
 
     remote_path, vf = res
-    size_mb = round(vf.get('size', 0) / (1024 * 1024))
-    size_str = f" · {size_mb} MB" if size_mb > 0 else ""
-    cat_tag = "Desenhos" if matched_anime.get('c') == 'desenhos' else ("Dorama" if matched_anime.get('c') == 'doramas' else "Anitsu")
-    ep_info = f"Filme" if is_movie else f"Ep. {ep_num}"
+    card_name_direct, card_title_direct = format_stream_card(matched_anime, vf, season_num, ep_num, is_movie=is_movie, is_proxy=False)
+    card_name_proxy, card_title_proxy = format_stream_card(matched_anime, vf, season_num, ep_num, is_movie=is_movie, is_proxy=True)
     
     # 1. Direct stream URL with proxyHeaders (streams straight from Anitsu Nuvem!)
     direct_url = f"https://nuvem.anitsu.moe/api/download?path={urllib.parse.quote(remote_path)}"
@@ -580,8 +677,8 @@ def stream(type_: str, video_id: str, request: Request):
     return {
         "streams": [
             {
-                "name": f"☁️ {cat_tag} [PT-BR]",
-                "title": f"{ep_info} [1080p Fansub Dual{size_str}]\n{vf.get('name')}",
+                "name": card_name_direct,
+                "title": card_title_direct,
                 "url": direct_url,
                 "behaviorHints": {
                     "notWebReady": False,
@@ -596,8 +693,8 @@ def stream(type_: str, video_id: str, request: Request):
                 }
             },
             {
-                "name": f"☁️ {cat_tag} Proxy [PT-BR]",
-                "title": f"{ep_info} [Proxy Alternativo]\n{vf.get('name')}",
+                "name": card_name_proxy,
+                "title": card_title_proxy,
                 "url": proxy_url,
                 "behaviorHints": {
                     "notWebReady": False,
