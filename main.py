@@ -444,7 +444,7 @@ def find_all_episode_files(anime, season_num, ep_num, video_id=""):
         subdirs = [f['name'] for f in files if f.get('is_directory')]
         for s in subdirs:
             s_lower = s.lower()
-            if any(bad in s_lower for bad in ['filme', 'movie', 'live action', 'série', 'taose', 'especiais', 'ova']):
+            if any(bad in s_lower for bad in ['filme', 'movie', 'live action', 'série', 'taose', 'especiais', 'especial', 'spin off', 'spin-off', 'extras', 'ova']):
                 continue
 
             # Check season folder
@@ -477,22 +477,28 @@ def find_all_episode_files(anime, season_num, ep_num, video_id=""):
 
     walk(root_folder, 0)
 
-    # Sort releases: 1080p, BD, Netflix, Web, Dual first
+    # Sort releases: Hardsub & Fansubs with Notes prioritized, then 1080p BD & Dual
     def score_rel(item):
         p, vf = item
         n = vf.get('name', '').lower()
         pl = p.lower()
         score = 0
+        is_hardsub = 'hardsub' in n or 'hardsub' in pl
+        is_hacchi = 'hacchi' in pl or 'hacchi' in n
+        if is_hardsub:
+            score += 35 # High priority so complete Fansub Hardsub with notes & karaoke is always prominent!
+        elif is_hacchi:
+            score += 25
         if '1080' in n or '1080' in pl: score += 20
         if 'bluray' in n or 'bd' in n or 'bd' in pl: score += 15
-        if 'dual' in n or 'dublado' in n or 'dual' in pl: score += 12
+        if 'dual' in n or 'dublado' in n or 'dual' in pl: score += 18
         if 'netflix' in pl or 'nf' in n: score += 12
         if 'opex' in pl: score += 10
         if 'cr' in pl or 'crunchyroll' in pl: score += 8
         if 'kyoshiro' in pl: score += 15
         if 'sennin' in pl: score += 14
-        if '720' in n: score -= 10
-        if '480' in n or '576' in n: score -= 20
+        if '720' in n and not is_hardsub: score -= 10
+        if ('480' in n or '576' in n) and not is_hardsub: score -= 20
         return score
 
     found_releases.sort(key=score_rel, reverse=True)
@@ -503,33 +509,44 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
     fn = filename.lower()
     pl = remote_path.lower()
 
+    is_hardsub = 'hardsub' in fn or 'hardsub' in pl
+    is_hacchi = 'hacchi' in pl or 'hacchi' in fn
+    is_dual = ('dual' in fn or 'dublado' in fn or 'dual' in pl or 'dublado' in pl) and not is_hardsub
+
     # 1. Resolution & Left Badge
-    if '2160' in fn or '4k' in fn or '4k' in pl:
-        res = '2160P ⚡'
-    elif '720' in fn or '720' in pl:
-        res = '720P ⚡'
-    elif '480' in fn or 'dvd' in fn or '576' in fn or 'dvd' in pl:
-        res = '480P ⚡'
+    if is_hardsub:
+        res_tag = '1080P' if ('1080' in fn or '1080' in pl) else ('720P' if ('720' in fn or '720' in pl) else '480P')
+        if is_proxy:
+            name = f"HARDSUB 🛡️\n({res_tag} Proxy) ★★"
+        else:
+            name = f"HARDSUB ⚡\n({res_tag} Fansub) ★★★"
     else:
-        res = '1080P ⚡'
+        if '2160' in fn or '4k' in fn or '4k' in pl:
+            res = '2160P ⚡'
+        elif '720' in fn or '720' in pl:
+            res = '720P ⚡'
+        elif '480' in fn or 'dvd' in fn or '576' in fn or 'dvd' in pl:
+            res = '480P ⚡'
+        else:
+            res = '1080P ⚡'
 
-    if 'remux' in fn or 'remux' in pl:
-        src = '(Remux) ★★★'
-    elif 'bluray' in fn or 'bd' in fn or 'bd' in pl:
-        src = '(Bluray) ★★★'
-    elif 'web' in fn or 'nf' in fn or 'netflix' in pl or 'cr' in pl:
-        src = '(Web-dl) ★★★'
-    elif 'hdtv' in fn or 'hdtv' in pl:
-        src = '(Hdtv) ★★'
-    elif 'dvd' in fn or 'dvd' in pl:
-        src = '(Dvdrip) ★'
-    else:
-        src = '★★★'
+        if 'remux' in fn or 'remux' in pl:
+            src = '(Remux) ★★★'
+        elif 'bluray' in fn or 'bd' in fn or 'bd' in pl:
+            src = '(Bluray) ★★★'
+        elif 'web' in fn or 'nf' in fn or 'netflix' in pl or 'cr' in pl:
+            src = '(Web-dl) ★★★'
+        elif 'hdtv' in fn or 'hdtv' in pl:
+            src = '(Hdtv) ★★'
+        elif 'dvd' in fn or 'dvd' in pl:
+            src = '(Dvdrip) ★'
+        else:
+            src = '★★★'
 
-    if is_proxy:
-        name = f"{res.replace('⚡', '🛡️')}\n(Proxy) ★★"
-    else:
-        name = f"{res}\n{src}"
+        if is_proxy:
+            name = f"{res.replace('⚡', '🛡️')}\n(Proxy) ★★"
+        else:
+            name = f"{res}\n{src}"
 
     # 2. Codec
     if 'hevc' in fn or 'x265' in fn or 'h265' in fn or 'h.265' in fn:
@@ -551,12 +568,10 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
     else:
         audio = '♫ DD 2.0'
 
-    is_hardsub = 'hardsub' in fn or 'hardsub' in pl
-    is_dual = ('dual' in fn or 'dublado' in fn or 'dual' in pl or 'dublado' in pl) and not is_hardsub
     if is_dual:
-        audio += ' · Dual Áudio'
+        audio += ' · Dual Áudio (Dublado PT-BR)'
     elif is_hardsub:
-        audio += ' · Hardsub Embutido'
+        audio += ' · Hardsub (Legenda Embutida)'
     else:
         audio += ' · Legendado PT-BR'
 
@@ -606,15 +621,19 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
         cloud_tag = "☁️ Nuvem Anitsu [Sem Espera / Sem Torrent]"
 
     # 8. Languages & Player flags
-    if is_dual:
+    if is_hardsub:
+        lang_str = "✔ Legenda Fixa + Notas de Tradução & Karaokê"
+    elif is_hacchi:
+        lang_str = "✔ JA · Legendado Fansub (Com Notas de Tradução)"
+    elif is_dual:
         lang_str = "✔ PT-BR (Dublado) · JA · SUB"
-    elif is_hardsub:
-        lang_str = "✔ JA · Legenda Fixa no Vídeo (Hardsub)"
     else:
         lang_str = "✔ JA · Legendado PT-BR · SUB"
     player_str = "✔ EXOPLAYER SAFE"
 
-    if is_movie:
+    if is_hardsub:
+        line1 = f"{clean_title} S{season_num:02d} E{ep_num:02d}{group_str} [Hardsub Completo]"
+    elif is_movie:
         line1 = f"{clean_title} [Filme]{group_str}"
     else:
         line1 = f"{clean_title} S{season_num:02d} E{ep_num:02d}{group_str}"
@@ -822,8 +841,18 @@ def stream(type_: str, video_id: str, request: Request):
     base_url = str(request.base_url).rstrip('/')
     streams = []
 
-    # Display up to 5 best distinct releases
-    for r_idx, (remote_path, vf) in enumerate(res_list[:5]):
+    # Display best distinct releases, guaranteeing Hardsub is included
+    chosen_releases = []
+    hardsub_rel = next((r for r in res_list if 'hardsub' in r[0].lower() or 'hardsub' in r[1].get('name', '').lower()), None)
+    for r in res_list:
+        if r not in chosen_releases:
+            chosen_releases.append(r)
+        if len(chosen_releases) >= 5:
+            break
+    if hardsub_rel and hardsub_rel not in chosen_releases:
+        chosen_releases.append(hardsub_rel)
+
+    for r_idx, (remote_path, vf) in enumerate(chosen_releases):
         card_name_direct, card_title_direct = format_stream_card(
             matched_anime, vf, remote_path, season_num, ep_num, is_movie=is_movie, is_proxy=False
         )
@@ -850,8 +879,9 @@ def stream(type_: str, video_id: str, request: Request):
                 }
             }
         })
-        # Add proxy option for the best release
-        if r_idx == 0:
+        # Add proxy option for the best release or hardsub
+        is_rel_hardsub = 'hardsub' in remote_path.lower() or 'hardsub' in vf.get('name', '').lower()
+        if r_idx == 0 or is_rel_hardsub:
             streams.append({
                 "name": card_name_proxy,
                 "title": card_title_proxy,
