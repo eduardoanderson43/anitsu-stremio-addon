@@ -567,35 +567,37 @@ def resolve_stremio_title(video_id, prefer_type="series"):
     return resolved_title
 
 def extract_episode_from_filename(fn):
+    # Strip CRC32/hashes in [] or () first to prevent matching hex inside checksums
+    fn_clean = re.sub(r'[\(\[][0-9a-fA-F]{8}[\)\]]', ' ', fn)
+
     # 1. Standard SxxExx (e.g. S01E02, s1e2)
-    m = re.search(r'(?i)\b[sS]\d+\s*[-_ ]?\s*[eE]0*(\d+)\b', fn)
+    m = re.search(r'(?i)\b[sS]\d+\s*[-_ ]?\s*[eE]0*(\d+)\b', fn_clean)
     if m:
         return int(m.group(1))
 
     # 2. Multi-episode range (e.g. 01-02, 001 e 002, 01a02, 01 to 02)
-    m_rng = re.search(r'(?i)(?:^|[^\d])0*(\d{1,4})\s*(?:[-_]| e | a | to )\s*0*(\d{1,4})(?:[^\d]|$)', fn)
+    m_rng = re.search(r'(?i)(?:^|[^\d])0*(\d{1,4})\s*(?:[-_]| e | a | to )\s*0*(\d{1,4})(?:[^\d]|$)', fn_clean)
     if m_rng:
         st, en = int(m_rng.group(1)), int(m_rng.group(2))
         if 1 <= st <= 2000 and 1 <= en <= 2000 and abs(en - st) <= 15:
             return (st, en)
 
     # 3. Chapter / Capitulo / Episode / Ep
-    m = re.search(r'(?i)(?:^|[^a-zA-Z])(?:chapter|capitulo|cap|episode|ep)[_\s.-]*0*(\d+)\b', fn)
+    m = re.search(r'(?i)(?:^|[\s_\[\(\.\-])(?:chapter|capitulo|cap|episode|ep)[_\s.-]*0*(\d+)\b', fn_clean)
     if m:
         return int(m.group(1))
 
-    # 4. Standard E01, Ep01 (not preceded by letters)
-    m = re.search(r'(?i)(?:^|[^a-zA-Z])[eE]0*(\d+)\b', fn)
+    # 4. Standard E01, Ep01 (not preceded by letters or digits)
+    m = re.search(r'(?i)(?:^|[\s_\[\(\.\-])[eE]0*(\d+)\b', fn_clean)
     if m:
         return int(m.group(1))
 
-    cleaned = fn
-    cleaned = re.sub(r'\[[0-9a-fA-F]{8}\]', ' ', cleaned)
+    cleaned = fn_clean
     cleaned = re.sub(r'\b(19\d\d|20\d\d)\b', ' ', cleaned)
-    cleaned = re.sub(r'\b(\d{3,4}x\d{3,4})\b', ' ', cleaned, flags=re.I)
-    cleaned = re.sub(r'\b(2160p|1080p|1080i|720p|480p|576p|4k)\b', ' ', cleaned, flags=re.I)
-    cleaned = re.sub(r'\b(x264|x265|h264|h265|hevc|avc|10bit|8bit)\b', ' ', cleaned, flags=re.I)
-    cleaned = re.sub(r'\b(ac3|aac|dvd|bd|flac|eac3|ddp?)\b', ' ', cleaned, flags=re.I)
+    cleaned = re.sub(r'(?i)\d{3,4}x\d{3,4}', ' ', cleaned)
+    cleaned = re.sub(r'(?i)\b(2160p|1080p|1080i|720p|480p|576p|4k)\b', ' ', cleaned)
+    cleaned = re.sub(r'(?i)(?:x264|x265|h264|h265|hevc|avc|10bit|8bit|hi10p)', ' ', cleaned)
+    cleaned = re.sub(r'(?i)\b(ac3|aac|dvd|bd|flac|eac3|ddp?)\b', ' ', cleaned)
     cleaned = re.sub(r'\b\d+\.\d+\b', ' ', cleaned)
     cleaned = re.sub(r'(?i)\b(?:s|season|temporada)\s*0*\d+\b', ' ', cleaned)
 
@@ -795,6 +797,10 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
         group_str = " · Netflix"
     elif 'anime onegai' in pl or 'onegai' in pl:
         group_str = " · Anime Onegai"
+    elif 'animensk' in pl or 'animensk' in fn:
+        group_str = " · AnimeNSK"
+    elif 'reiji' in pl or 'reiji' in fn:
+        group_str = " · Reiji"
     elif 'opex' in pl:
         group_str = " · Opex"
     elif 'kyoshiro' in pl:
@@ -914,6 +920,7 @@ def manifest():
     return get_anitsu_manifest()
 
 @app.get("/catalog/{type_}/{catalog_id}.json")
+@app.get("/catalog/{type_}/{catalog_id}/search={search}.json")
 def catalog(type_: str, catalog_id: str, search: str = "", skip: int = 0):
     if catalog_id == "anitsu-desenhos":
         filtered = [a for a in animes_list if a.get('c') == 'desenhos' and a.get('t') == 'series']
@@ -968,27 +975,44 @@ def meta(type_: str, video_id: str):
         })
     else:
         subdirs = [f['name'] for f in files if f.get('is_directory')]
+        seasons_map = {}
         if subdirs:
-            for s_idx, sname in enumerate(subdirs):
+            for sname in subdirs:
+                s_lower = sname.lower()
+                s_match = re.search(r'\b(?:s|season|temporada)\s*0?(\d+)\b', s_lower)
+                s_num = int(s_match.group(1)) if s_match else 1
+                if s_num not in seasons_map:
+                    seasons_map[s_num] = set()
                 s_files = anitsu_list_files(f"{root_folder}/{sname}")
-                vfiles = [f for f in s_files if not f.get('is_directory') and f['name'].lower().endswith(('.mkv', '.mp4'))]
-                vfiles.sort(key=lambda x: x['name'])
-                for ep_idx, vf in enumerate(vfiles):
-                    videos.append({
-                        "id": f"anitsu:{aid}:{s_idx+1}:{ep_idx+1}",
-                        "title": vf['name'],
-                        "season": s_idx + 1,
-                        "episode": ep_idx + 1
-                    })
+                for vf in s_files:
+                    if not vf.get('is_directory') and vf['name'].lower().endswith(('.mkv', '.mp4')):
+                        ep = extract_episode_from_filename(vf['name'])
+                        if isinstance(ep, int):
+                            seasons_map[s_num].add(ep)
+                        elif isinstance(ep, tuple):
+                            for x in range(ep[0], ep[1]+1):
+                                seasons_map[s_num].add(x)
         else:
-            vfiles = [f for f in files if not f.get('is_directory') and f['name'].lower().endswith(('.mkv', '.mp4'))]
-            vfiles.sort(key=lambda x: x['name'])
-            for ep_idx, vf in enumerate(vfiles):
+            seasons_map[1] = set()
+            for vf in files:
+                if not vf.get('is_directory') and vf['name'].lower().endswith(('.mkv', '.mp4')):
+                    ep = extract_episode_from_filename(vf['name'])
+                    if isinstance(ep, int):
+                        seasons_map[1].add(ep)
+                    elif isinstance(ep, tuple):
+                        for x in range(ep[0], ep[1]+1):
+                            seasons_map[1].add(x)
+
+        for s_num in sorted(seasons_map.keys()):
+            eps = sorted(seasons_map[s_num])
+            if not eps:
+                eps = list(range(1, 13))
+            for ep in eps:
                 videos.append({
-                    "id": f"anitsu:{aid}:1:{ep_idx+1}",
-                    "title": vf['name'],
-                    "season": 1,
-                    "episode": ep_idx + 1
+                    "id": f"anitsu:{aid}:{s_num}:{ep}",
+                    "title": f"Episódio {ep}",
+                    "season": s_num,
+                    "episode": ep
                 })
 
     stremio_type = "movie" if is_movie else ("anime" if anime.get('c') == 'anime' else "series")
@@ -1006,7 +1030,7 @@ def meta(type_: str, video_id: str):
     }
 
 @app.get("/stream/{type_}/{video_id}.json")
-def stream(type_: str, video_id: str, request: Request):
+def stream(type_: str, video_id: str, request: Request = None):
     parts = video_id.split(':')
     matched_anime = None
     season_num = 1
@@ -1072,7 +1096,7 @@ def stream(type_: str, video_id: str, request: Request):
     with cookie_lock:
         ck = current_cookie
 
-    base_url = str(request.base_url).rstrip('/')
+    base_url = str(request.base_url).rstrip('/') if request else 'https://anitsu-stremio-addon.onrender.com'
     streams = []
 
     # Display best distinct releases, guaranteeing Hardsub is included
