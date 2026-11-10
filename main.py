@@ -423,18 +423,39 @@ def anitsu_list_files(path):
 
 def resolve_stremio_title(video_id, prefer_type="series"):
     parts = video_id.split(':')
-    series_id = parts[0]
+    if parts[0].startswith('kitsu') and len(parts) >= 2:
+        series_id = f"{parts[0]}:{parts[1]}"
+        kid = parts[1]
+    elif parts[0].startswith('mal') and len(parts) >= 2:
+        series_id = f"{parts[0]}:{parts[1]}"
+        kid = None
+    else:
+        series_id = parts[0]
+        kid = None
+
     cache_key = f"{prefer_type}:{series_id}"
     if cache_key in cache_title_resolution:
         return cache_title_resolution[cache_key]
 
     resolved_title = None
-    if series_id.startswith('kitsu'):
-        kid = parts[1]
+    if kid:
         try:
-            r = requests.get(f'https://kitsu.io/api/edge/anime/{kid}', headers={'User-Agent': UA}, timeout=2.5)
+            r = requests.get(f'https://kitsu.io/api/edge/anime/{kid}', headers={'User-Agent': UA}, timeout=3.0)
             if r.status_code == 200:
-                resolved_title = r.json().get('data', {}).get('attributes', {}).get('canonicalTitle')
+                attrs = r.json().get('data', {}).get('attributes', {})
+                resolved_title = attrs.get('canonicalTitle') or attrs.get('titles', {}).get('en') or attrs.get('titles', {}).get('en_jp')
+        except Exception:
+            pass
+    elif series_id.startswith('mal') and len(parts) >= 2:
+        mal_id = parts[1]
+        try:
+            r = requests.get(f'https://api.ani.zip/mappings?mal_id={mal_id}', headers={'User-Agent': UA}, timeout=3.0)
+            if r.status_code == 200:
+                imdb_id = r.json().get('mappings', {}).get('imdb_id')
+                if imdb_id:
+                    r2 = requests.get(f'https://v3-cinemeta.strem.io/meta/{prefer_type}/{imdb_id}.json', headers={'User-Agent': UA}, timeout=2.0)
+                    if r2.status_code == 200:
+                        resolved_title = r2.json().get('meta', {}).get('name')
         except Exception:
             pass
     elif series_id.startswith('tt'):
@@ -452,7 +473,8 @@ def resolve_stremio_title(video_id, prefer_type="series"):
             except Exception:
                 pass
 
-    cache_title_resolution[cache_key] = resolved_title
+    if resolved_title:
+        cache_title_resolution[cache_key] = resolved_title
     return resolved_title
 
 def find_all_episode_files(anime, season_num, ep_num, video_id=""):
@@ -868,8 +890,29 @@ def stream(type_: str, video_id: str, request: Request):
         title = resolve_stremio_title(video_id, prefer_type=prefer)
         if title:
             matched_anime = find_anime_by_title(title)
-        season_num = 1
-        ep_num = int(parts[2]) if len(parts) >= 3 else (int(parts[1]) if len(parts) >= 2 else 1)
+        if len(parts) >= 4:
+            season_num = int(parts[2])
+            ep_num = int(parts[3])
+        elif len(parts) >= 3:
+            season_num = 1
+            ep_num = int(parts[2])
+        else:
+            season_num = 1
+            ep_num = 1
+    elif video_id.startswith('mal'):
+        prefer = "movie" if is_movie else "series"
+        title = resolve_stremio_title(video_id, prefer_type=prefer)
+        if title:
+            matched_anime = find_anime_by_title(title)
+        if len(parts) >= 4:
+            season_num = int(parts[2])
+            ep_num = int(parts[3])
+        elif len(parts) >= 3:
+            season_num = 1
+            ep_num = int(parts[2])
+        else:
+            season_num = 1
+            ep_num = 1
     elif video_id.startswith('tt'):
         prefer = "movie" if is_movie else "series"
         title = resolve_stremio_title(video_id, prefer_type=prefer)
