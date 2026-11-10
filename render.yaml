@@ -10,4 +10,4 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: ANITSU_REFRESH_TOKEN
-        value: at4jx3pg4gwq
+        value: 7t3e26zdcgtj
