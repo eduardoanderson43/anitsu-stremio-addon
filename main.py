@@ -1029,13 +1029,187 @@ def meta(type_: str, video_id: str):
         }
     }
 
+def find_monogatari_streams(video_id, title, season_num, ep_num, base_url=""):
+    base = "Animes/Letra M/Monogatari Series"
+    t_lower = (title or '').lower()
+    
+    is_main_bake = 'bakemonogatari' in t_lower or 'tt1480925' in video_id or video_id.startswith('kitsu:4363') or video_id.startswith('mal:5081')
+    target_folder = None
+    target_ep = ep_num
+    is_movie = False
+    clean_title = "Bakemonogatari"
+
+    if is_main_bake:
+        if season_num == 1:
+            target_folder = f"{base}/01. Bakemonogatari"
+            target_ep = ep_num
+        elif season_num == 2:
+            clean_title = "Nisemonogatari"
+            target_folder = f"{base}/03. Nisemonogatari"
+            target_ep = ep_num
+        elif season_num == 3:
+            clean_title = "Monogatari Series: Second Season"
+            if 1 <= ep_num <= 5:
+                target_folder = f"{base}/05. Monogatari Series - Second Season/Arc 01： Nekomonogatari (Shiro)"
+                target_ep = ep_num
+            elif 6 <= ep_num <= 9:
+                target_folder = f"{base}/05. Monogatari Series - Second Season/Arc 02： Kabukimonogatari"
+                target_ep = ep_num - 5
+            elif 10 <= ep_num <= 13:
+                target_folder = f"{base}/05. Monogatari Series - Second Season/Arc 03： Otorimonogatari"
+                target_ep = ep_num - 9
+            elif 14 <= ep_num <= 17:
+                target_folder = f"{base}/05. Monogatari Series - Second Season/Arc 04： Onimonogatari"
+                target_ep = ep_num - 13
+            elif 18 <= ep_num <= 23:
+                target_folder = f"{base}/05. Monogatari Series - Second Season/Arc 05： Koimonogatari"
+                target_ep = ep_num - 17
+            else:
+                target_folder = f"{base}/05. Monogatari Series - Second Season"
+                target_ep = ep_num
+        elif season_num == 4:
+            clean_title = "Owarimonogatari"
+            target_folder = f"{base}/09. Owarimonogatari"
+            target_ep = ep_num
+        elif season_num == 5:
+            clean_title = "Owarimonogatari 2nd Season"
+            target_folder = f"{base}/10. Owarimonogatari 2nd Season"
+            target_ep = ep_num
+        elif season_num == 6:
+            clean_title = "Monogatari Series: Off & Monster Season"
+            target_folder = f"{base}/12. Monogatari Series - Off & Monster Season"
+            target_ep = ep_num
+        elif season_num == 0:
+            if ep_num == 2:
+                clean_title = "Kizumonogatari I: Tekketsu-hen"
+                target_folder = f"{base}/02. Kizumonogatari/Filme 1 "
+                is_movie = True
+            elif ep_num == 19:
+                clean_title = "Kizumonogatari II: Nekketsu-hen"
+                target_folder = f"{base}/02. Kizumonogatari/Filme 2"
+                is_movie = True
+            elif ep_num == 20:
+                clean_title = "Kizumonogatari III: Reiketsu-hen"
+                target_folder = f"{base}/02. Kizumonogatari/Filme 3"
+                is_movie = True
+            elif 3 <= ep_num <= 6:
+                clean_title = "Nekomonogatari (Kuro)"
+                target_folder = f"{base}/04. Nekomonogatari (Kuro)"
+                target_ep = ep_num - 2
+            elif 10 <= ep_num <= 14:
+                clean_title = "Hanamonogatari"
+                target_folder = f"{base}/06. Hanamonogatari"
+                target_ep = ep_num - 9
+            elif 15 <= ep_num <= 18:
+                clean_title = "Tsukimonogatari"
+                target_folder = f"{base}/07. Tsukimonogatari"
+                target_ep = ep_num - 14
+            elif 21 <= ep_num <= 32:
+                clean_title = "Koyomimonogatari"
+                target_folder = f"{base}/08. Koyomimonogatari"
+                target_ep = ep_num - 20
+            elif 33 <= ep_num <= 38:
+                clean_title = "Zoku Owarimonogatari"
+                target_folder = f"{base}/11. Zoku Owarimonogatari"
+                target_ep = ep_num - 32
+    else:
+        clean_title = title or "Monogatari Series"
+        if 'kizumonogatari' in t_lower:
+            is_movie = True
+            if 'ii' in t_lower or '2' in t_lower or 'nekketsu' in t_lower:
+                clean_title = "Kizumonogatari II: Nekketsu-hen"
+                target_folder = f"{base}/02. Kizumonogatari/Filme 2"
+            elif 'iii' in t_lower or '3' in t_lower or 'reiketsu' in t_lower:
+                clean_title = "Kizumonogatari III: Reiketsu-hen"
+                target_folder = f"{base}/02. Kizumonogatari/Filme 3"
+            else:
+                clean_title = "Kizumonogatari I: Tekketsu-hen"
+                target_folder = f"{base}/02. Kizumonogatari/Filme 1 "
+        elif 'nisemonogatari' in t_lower:
+            clean_title = "Nisemonogatari"
+            target_folder = f"{base}/03. Nisemonogatari"
+            target_ep = ep_num
+        elif 'nekomonogatari' in t_lower:
+            clean_title = "Nekomonogatari (Kuro)"
+            target_folder = f"{base}/04. Nekomonogatari (Kuro)"
+            target_ep = ep_num
+        elif 'hanamonogatari' in t_lower:
+            clean_title = "Hanamonogatari"
+            target_folder = f"{base}/06. Hanamonogatari"
+            target_ep = ep_num
+        elif 'tsukimonogatari' in t_lower:
+            clean_title = "Tsukimonogatari"
+            target_folder = f"{base}/07. Tsukimonogatari"
+            target_ep = ep_num
+        elif 'koyomimonogatari' in t_lower:
+            clean_title = "Koyomimonogatari"
+            target_folder = f"{base}/08. Koyomimonogatari"
+            target_ep = ep_num
+        elif 'zoku owari' in t_lower:
+            clean_title = "Zoku Owarimonogatari"
+            target_folder = f"{base}/11. Zoku Owarimonogatari"
+            target_ep = ep_num
+        elif 'owarimonogatari' in t_lower:
+            if season_num == 2 or '2nd' in t_lower or 'season 2' in t_lower:
+                clean_title = "Owarimonogatari 2nd Season"
+                target_folder = f"{base}/10. Owarimonogatari 2nd Season"
+            else:
+                clean_title = "Owarimonogatari"
+                target_folder = f"{base}/09. Owarimonogatari"
+            target_ep = ep_num
+
+    if not target_folder:
+        return []
+
+    found = []
+    def walk(curr, depth=0):
+        if depth > 4: return
+        files = anitsu_list_files(curr)
+        if not files: return
+        vfiles = [f for f in files if not f.get('is_directory') and f['name'].lower().endswith(('.mkv', '.mp4'))]
+        if vfiles:
+            for vf in vfiles:
+                if is_movie:
+                    found.append((f"{curr}/{vf['name']}", vf))
+                else:
+                    ep = extract_episode_from_filename(vf['name'])
+                    if ep == target_ep or (isinstance(ep, tuple) and ep[0] <= target_ep <= ep[1]):
+                        found.append((f"{curr}/{vf['name']}", vf))
+            return
+        for sf in files:
+            if sf.get('is_directory'):
+                walk(f"{curr}/{sf['name']}", depth + 1)
+
+    walk(target_folder, 0)
+
+    subs = get_subtitles_for_media(video_id, title=clean_title, is_movie=is_movie)
+    cards = []
+    dummy_anime = {'id': 28524, 'n': clean_title, 'p': base}
+    for p, vf in found:
+        name, title_card = format_stream_card(dummy_anime, vf, p, season_num, ep_num, is_movie=is_movie)
+        stream_item = {
+            "name": name,
+            "title": title_card,
+            "url": f"{base_url}/proxy-stream?path={urllib.parse.quote(p)}",
+            "behaviorHints": {
+                "notWebReady": False,
+                "bingeGroup": f"anitsu-28524-{season_num}"
+            }
+        }
+        if subs:
+            stream_item["subtitles"] = subs
+        cards.append(stream_item)
+    return cards
+
 @app.get("/stream/{type_}/{video_id}.json")
 def stream(type_: str, video_id: str, request: Request = None):
+    base_url = str(request.base_url).rstrip('/') if request else 'https://anitsu-stremio-addon.onrender.com'
     parts = video_id.split(':')
     matched_anime = None
     season_num = 1
     ep_num = 1
     is_movie = type_ == "movie" or (len(parts) == 1 and video_id.startswith('tt'))
+    title = None
 
     if video_id.startswith('anitsu:'):
         aid = int(parts[1])
@@ -1083,6 +1257,12 @@ def stream(type_: str, video_id: str, request: Request = None):
             season_num = 1
             ep_num = int(parts[1])
 
+    title_check = (title or '').lower()
+    if ('monogatari' in title_check or 'tt1480925' in video_id or video_id.startswith('kitsu:4363') or video_id.startswith('mal:5081')):
+        m_streams = find_monogatari_streams(video_id, title or 'Bakemonogatari', season_num, ep_num, base_url=base_url)
+        if m_streams:
+            return {"streams": m_streams}
+
     if not matched_anime:
         return {"streams": []}
 
@@ -1096,7 +1276,6 @@ def stream(type_: str, video_id: str, request: Request = None):
     with cookie_lock:
         ck = current_cookie
 
-    base_url = str(request.base_url).rstrip('/') if request else 'https://anitsu-stremio-addon.onrender.com'
     streams = []
 
     # Display best distinct releases, guaranteeing Hardsub is included
