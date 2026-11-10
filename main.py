@@ -566,6 +566,44 @@ def resolve_stremio_title(video_id, prefer_type="series"):
         cache_title_resolution[cache_key] = resolved_title
     return resolved_title
 
+def extract_episode_from_filename(fn):
+    # 1. Standard SxxExx (e.g. S01E02, s1e2)
+    m = re.search(r'(?i)\b[sS]\d+\s*[-_ ]?\s*[eE]0*(\d+)\b', fn)
+    if m:
+        return int(m.group(1))
+
+    # 2. Multi-episode range (e.g. 01-02, 001 e 002, 01a02, 01 to 02)
+    m_rng = re.search(r'(?i)(?:^|[^\d])0*(\d{1,4})\s*(?:[-_]| e | a | to )\s*0*(\d{1,4})(?:[^\d]|$)', fn)
+    if m_rng:
+        st, en = int(m_rng.group(1)), int(m_rng.group(2))
+        if 1 <= st <= 2000 and 1 <= en <= 2000 and abs(en - st) <= 15:
+            return (st, en)
+
+    # 3. Chapter / Capitulo / Episode / Ep
+    m = re.search(r'(?i)(?:^|[^a-zA-Z])(?:chapter|capitulo|cap|episode|ep)[_\s.-]*0*(\d+)\b', fn)
+    if m:
+        return int(m.group(1))
+
+    # 4. Standard E01, Ep01 (not preceded by letters)
+    m = re.search(r'(?i)(?:^|[^a-zA-Z])[eE]0*(\d+)\b', fn)
+    if m:
+        return int(m.group(1))
+
+    cleaned = fn
+    cleaned = re.sub(r'\[[0-9a-fA-F]{8}\]', ' ', cleaned)
+    cleaned = re.sub(r'\b(19\d\d|20\d\d)\b', ' ', cleaned)
+    cleaned = re.sub(r'\b(\d{3,4}x\d{3,4})\b', ' ', cleaned, flags=re.I)
+    cleaned = re.sub(r'\b(2160p|1080p|1080i|720p|480p|576p|4k)\b', ' ', cleaned, flags=re.I)
+    cleaned = re.sub(r'\b(x264|x265|h264|h265|hevc|avc|10bit|8bit)\b', ' ', cleaned, flags=re.I)
+    cleaned = re.sub(r'\b(ac3|aac|dvd|bd|flac|eac3|ddp?)\b', ' ', cleaned, flags=re.I)
+    cleaned = re.sub(r'\b\d+\.\d+\b', ' ', cleaned)
+    cleaned = re.sub(r'(?i)\b(?:s|season|temporada)\s*0*\d+\b', ' ', cleaned)
+
+    nums = re.findall(r'(?:^|[^\d])0*(\d{1,4})(?:[^\d]|$)', cleaned)
+    if nums:
+        return int(nums[0])
+    return None
+
 def find_all_episode_files(anime, season_num, ep_num, video_id=""):
     root_folder = f"{anime['p']}/{anime['n']}"
     is_movie = anime.get('t') == 'movie' or 'Filmes' in anime.get('p', '')
@@ -596,27 +634,30 @@ def find_all_episode_files(anime, season_num, ep_num, video_id=""):
                     found_releases.append((f"{folder}/{vf['name']}", vf))
                 return
 
-            for t_ep in target_eps:
-                ep_patterns = [
-                    re.compile(rf'(?:^|[^\d])0*{t_ep}(?:[^\d]|$)'),
-                    re.compile(rf'[eE]0*{t_ep}(?:[^\d]|$)'),
-                    re.compile(rf'ep\s*0*{t_ep}(?:[^\d]|$)', re.I)
-                ]
-                for vf in video_files:
-                    name = vf['name']
-                    # Clean crc32 checksums like [16892632]
-                    name_clean = re.sub(r'\[[a-fA-F0-9]{8}\]', '', name)
-                    
-                    # Filter wrong seasons if file explicitly specifies S02 when we want S01
-                    s_file_match = re.search(r'\b(?:s|season)\s*0?(\d+)\b', name_clean.lower())
-                    if s_file_match and season_num <= 10 and 'one piece' not in anime['n'].lower():
-                        if int(s_file_match.group(1)) != season_num:
-                            continue
+            for vf in video_files:
+                name = vf['name']
+                # Clean crc32 checksums like [16892632]
+                name_clean = re.sub(r'\[[a-fA-F0-9]{8}\]', '', name)
+                
+                # Filter wrong seasons if file explicitly specifies S02 when we want S01
+                s_file_match = re.search(r'\b(?:s|season)\s*0?(\d+)\b', name_clean.lower())
+                if s_file_match and season_num <= 10 and 'one piece' not in anime['n'].lower():
+                    if int(s_file_match.group(1)) != season_num:
+                        continue
 
-                    for pat in ep_patterns:
-                        if pat.search(name_clean):
-                            found_releases.append((f"{folder}/{name}", vf))
-                            return # found in this folder
+                ep_info = extract_episode_from_filename(name_clean)
+                matched = False
+                if isinstance(ep_info, int):
+                    if ep_info in target_eps:
+                        matched = True
+                elif isinstance(ep_info, tuple):
+                    st, en = ep_info
+                    if any(st <= t_ep <= en for t_ep in target_eps):
+                        matched = True
+
+                if matched:
+                    found_releases.append((f"{folder}/{name}", vf))
+                    return # found in this folder
 
         subdirs = [f['name'] for f in files if f.get('is_directory')]
         for s in subdirs:
@@ -697,6 +738,8 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
     else:
         if '2160' in fn or '4k' in fn or '4k' in pl:
             res = '2160P ⚡'
+        elif '1080' in fn or '1080' in pl:
+            res = '1080P ⚡'
         elif '720' in fn or '720' in pl:
             res = '720P ⚡'
         elif '480' in fn or 'dvd' in fn or '576' in fn or 'dvd' in pl:
@@ -708,7 +751,7 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
             src = '(Remux) ★★★'
         elif 'bluray' in fn or 'bd' in fn or 'bd' in pl:
             src = '(Bluray) ★★★'
-        elif 'web' in fn or 'nf' in fn or 'netflix' in pl or 'cr' in pl:
+        elif 'web' in fn or 'nf' in fn or 'netflix' in pl or 'cr' in pl or 'onegai' in pl:
             src = '(Web-dl) ★★★'
         elif 'hdtv' in fn or 'hdtv' in pl:
             src = '(Hdtv) ★★'
@@ -750,6 +793,8 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
     group_str = ""
     if 'netflix' in pl:
         group_str = " · Netflix"
+    elif 'anime onegai' in pl or 'onegai' in pl:
+        group_str = " · Anime Onegai"
     elif 'opex' in pl:
         group_str = " · Opex"
     elif 'kyoshiro' in pl:
