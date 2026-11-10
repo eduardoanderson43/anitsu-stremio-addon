@@ -29,7 +29,7 @@ TOKEN_CACHE_FILE = os.path.join(os.path.dirname(__file__), 'token_cache.json')
 CATALOG_FILE = os.path.join(os.path.dirname(__file__), 'catalog_min.json')
 
 DEFAULT_FALLBACK_TOKEN = 'gmtoq5lk3h6k'
-DEFAULT_INITIAL_COOKIE = os.getenv('ANITSU_COOKIE', 'sb-auth-auth-token.0=base64-eyJhY2Nlc3NfdG9rZW4iOiAiZXlKaGJHY2lPaUpGVXpJMU5pSXNJbXRwWkNJNkltTmlPV1EwWkRreUxUbGpPV1V0TkROak1TMWhNekJqTFRobFkyVmlOamN5TW1ObE9DSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKb2RIUndjem92TDJGMWRHZ3VZVzVwZEhOMUxtMXZaUzloZFhSb0wzWXhJaXdpYzNWaUlqb2lOR1JqTXpNMFkyUXRZamxoTkMwME56RTNMVGhtWm1VdFlqQTJZbUkyTWpjelpERTNJaXdpWVhWa0lqb2lZWFYwYUdWdWRHbGpZWFJsWkNJc0ltVjRjQ0k2TVRjNU5ESTNNemN3TUN3aWFXRjBJam94TnprME1qY3dNVEF3TENKbGJXRnBiQ0k2SW1Wa2RXRnlaRzloYm1SbGNuTnZialF6UUdkdFlXbHNMbU52YlNJc0luQm9iMjVsSWpvaUlpd2lZWEJ3WDIxbGRHRmtZWFJoSWpwN0ltMWxiV0psY2lJNmRISjFaU3dpY0hKdmRtbGtaWElpT2lKbGJXRnBiQ0lzSW5CeWIzWnBaR1Z5Y3lJNld5SmxiV0ZwYkNJc0ltUnBjMk52Y21RaVhYMHNJblZ6WlhKZmJXVjBZV1JoZEdFaU9uc2lZWFpoZEdGeUlqb2lJaXdpWVhaaGRHRnlYM1Z5YkNJNkltaDBkSEJ6T2k4dlkyUnVMbVJwYzJOdmNtUmhjSEF1WTI5dEwyRjJZWFJoY25Ndk1qazJNRGs0TkRFd016VTRPRGs0TmprNUwyVTBPV1JrWWpZelpEbGpPV1pqWVRnMFpHVTBZekUzTnpkbVl6QmhZemRtTG5CdVp5SXNJbU4xYzNSdmJWOWpiR0ZwYlhNaU9uc2laMnh2WW1Gc1gyNWhiV1VpT2lKQmJtUmxjbk52YmlKOUxDSmxiV0ZwYkNJNkltVmtkV0Z5Wkc5aGJtUmxjbk52YmpRelFHZHRZV2xzTG1OdmJTSXNJbVZ0WVdsc1gzWmxjbWxtYVdWa0lqcDBjblZsTENKbWRXeHNYMjVoYldVaU9pSmhibVJsY25OdmJqQXdNREVpTENKcGMzTWlPaUpvZEhSd2N6b3ZMMlJwYzJOdmNtUXVZMjl0TDJGd2FTSXNJbTVoYldVaU9pSmhibVJsY25OdmJqQXdNREVqTUNJc0luQm9iMjVsWDNabGNtbG1hV1ZrSWpwbVlXeHpaU3dpY0dsamRIVnlaU0k2SW1oMGRIQnpPaTh2WTJSdUxtUnBjMk52Y21SaGNIQXVZMjl0TDJGMllYUmhjbk12TWprMk1EazROREV3TXpVNE9EazROams1TDJVME9XUmtZall6WkRsak9XWmpZVGcwWkdVMFl6RTNOemRtWXpCaFl6ZG1MbkJ1WnlJc0luQnliM1pwWkdWeVgybGtJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWMzVmlJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWRYTmxjbTVoYldVaU9pSkJibVJsY25OdmJqUXpNVE1pZlN3aWNtOXNaU0k2SW1GMWRHaGxiblJwWTJGMFpXUWlMQ0poWVd3aU9pSmhZV3d4SWl3aVlXMXlJanBiZXlKdFpYUm9iMlFpT2lKdllYVjBhQ0lzSW5ScGJXVnpkR0Z0Y0NJNk1UYzVOREkzTURFd01IMWRMQ0p6WlhOemFXOXVYMmxrSWpvaU5HWXdZek5pWkdRdFkyWTNZUzAwT1dVekxXRTFaR010T1RrM09EWXhNREprWmpJd0lpd2lhWE5mWVc1dmJubHRiM1Z6SWpwbVlXeHpaWDAuUWVpZUl1YmJubFpPUFdBMElMd0FFdzE5ekpibHhDampHd0FQclVjUXZua0k2bHdick1fQW1uVlVpX1l0aWwxS2RESV9DbmVSbkJMU0FUWEJpMGtxaHciLCAidG9rZW5fdHlwZSI6ICJiZWFyZXIiLCAiZXhwaXJlc19pbiI6IDM2MDAsICJleHBpcmVzX2F0IjogMTc5NDI3MzcwMCwgInJlZnJlc2hfdG9rZW4iOiAicmpsc29mc215eXVzIiwgInVzZXIiOiB7ImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJhdWQiOiAiYXV0aGVudGljYXRlZCIsICJyb2xlIjogImF1dGhlbnRpY2F0ZWQiLCAiZW1haWwiOiAiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwgImVtYWlsX2NvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAicGhvbmUiOiAiIiwgImNvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAibGFzdF9zaWduX2luX2F0IjogIjIwMjYtMTEtMTBUMDA6MjE6NDAuNjE0NTY1MjI1WiIsICJhcHBfbWV0YWRhdGEiOiB7Im1lbWJlciI6IHRydWUsICJwcm92aWRlciI6ICJlbWFpbCIsICJwcm92aWRlcnMiOiBbImVtYWlsIiwgImRpc2NvcmQiXX0sICJ1c2VyX21ldGFkYXRhIjogeyJhdmF0YXIiOiAiIiwgImF2YXRhcl91cmwiOiAiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiNjNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwgImN1c3RvbV9jbGFpbXMiOiB7Imdsb2JhbF9uYW1lIjogIkFuZGVyc29uIn0sICJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiB0c; sb-auth-auth-token.1=nVlLCAiZnVsbF9uYW1lIjogImFuZGVyc29uMDAwMSIsICJpc3MiOiAiaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkiLCAibmFtZSI6ICJhbmRlcnNvbjAwMDEjMCIsICJwaG9uZV92ZXJpZmllZCI6IGZhbHNlLCAicGljdHVyZSI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAicHJvdmlkZXJfaWQiOiAiMjk2MDk4NDEwMzU4ODk4Njk5IiwgInN1YiI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcm5hbWUiOiAiQW5kZXJzb240MzEzIn0sICJpZGVudGl0aWVzIjogW3siaWRlbnRpdHlfaWQiOiAiZWFjNTEzMDQtOGMxMC00ZDdhLWIxMjUtNzk2ZDRhYWRiZDdlIiwgImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJ1c2VyX2lkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJpZGVudGl0eV9kYXRhIjogeyJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiBmYWxzZSwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJzdWIiOiAiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3In0sICJwcm92aWRlciI6ICJlbWFpbCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODUzNzRaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9LCB7ImlkZW50aXR5X2lkIjogIjdmMTJjOTY2LWU4OWItNDZkYy04MjY5LWY2NDllYWUxZWE0YSIsICJpZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcl9pZCI6ICI0ZGMzMzRjZC1iOWE0LTQ3MTctOGZmZS1iMDZiYjYyNzNkMTciLCAiaWRlbnRpdHlfZGF0YSI6IHsiYXZhdGFyX3VybCI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAiY3VzdG9tX2NsYWltcyI6IHsiZ2xvYmFsX25hbWUiOiAiQW5kZXJzb24ifSwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSIsICJlbWFpbF92ZXJpZmllZCI6IHRydWUsICJmdWxsX25hbWUiOiAiYW5kZXJzb24wMDAxIiwgImlzcyI6ICJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsICJuYW1lIjogImFuZGVyc29uMDAwMSMwIiwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJwaWN0dXJlIjogImh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsICJwcm92aWRlcl9pZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAic3ViIjogIjI5NjA5ODQxMDM1ODg5ODY5OSJ9LCAicHJvdmlkZXIiOiAiZGlzY29yZCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0xMC0yMFQyMDoxNTo1MS42MjU1MzNaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0xMC0yMFQyMDoxNTo1MS42MjU1OTJaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNi0xMS0xMFQwMDoyMTozOS45MDgyNDdaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9XSwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODMxODlaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNi0xMS0xMFQwMDoyMTo0MC42MjIwNzRaIiwgImlzX2Fub255bW91cyI6IGZhbHNlfSwgInByb3ZpZGVyX3Rva2VuIjogIk1USTNNRFUyTVRBd01UWTFOelEzTVRBd05nLmQ5bVNGV2REWUk1cGJFV1hKNkNVdUllQ2kyM0l4ciIsICJwcm92aWRlcl9yZWZyZXNoX3Rva2VuIjogIk5LNDlVc2tsd05LNjBCeUczM3BOajI0dTFpQnc3cSJ9')
+DEFAULT_INITIAL_COOKIE = os.getenv('ANITSU_COOKIE', 'sb-auth-auth-token.0=base64-eyJhY2Nlc3NfdG9rZW4iOiAiZXlKaGJHY2lPaUpGVXpJMU5pSXNJbXRwWkNJNkltTmlPV1EwWkRreUxUbGpPV1V0TkROak1TMWhNekJqTFRobFkyVmlOamN5TW1ObE9DSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKb2RIUndjem92TDJGMWRHZ3VZVzVwZEhOMUxtMXZaUzloZFhSb0wzWXhJaXdpYzNWaUlqb2lOR1JqTXpNMFkyUXRZamxoTkMwME56RTNMVGhtWm1VdFlqQTJZbUkyTWpjelpERTNJaXdpWVhWa0lqb2lZWFYwYUdWdWRHbGpZWFJsWkNJc0ltVjRjQ0k2TVRjNU5ESTNNemc0TXl3aWFXRjBJam94TnprME1qY3dNamd6TENKbGJXRnBiQ0k2SW1Wa2RXRnlaRzloYm1SbGNuTnZialF6UUdkdFlXbHNMbU52YlNJc0luQm9iMjVsSWpvaUlpd2lZWEJ3WDIxbGRHRmtZWFJoSWpwN0ltMWxiV0psY2lJNmRISjFaU3dpY0hKdmRtbGtaWElpT2lKbGJXRnBiQ0lzSW5CeWIzWnBaR1Z5Y3lJNld5SmxiV0ZwYkNJc0ltUnBjMk52Y21RaVhYMHNJblZ6WlhKZmJXVjBZV1JoZEdFaU9uc2lZWFpoZEdGeUlqb2lJaXdpWVhaaGRHRnlYM1Z5YkNJNkltaDBkSEJ6T2k4dlkyUnVMbVJwYzJOdmNtUmhjSEF1WTI5dEwyRjJZWFJoY25Ndk1qazJNRGs0TkRFd016VTRPRGs0TmprNUwyVTBPV1JrWWpZelpEbGpPV1pqWVRnMFpHVTBZekUzTnpkbVl6QmhZemRtTG5CdVp5SXNJbU4xYzNSdmJWOWpiR0ZwYlhNaU9uc2laMnh2WW1Gc1gyNWhiV1VpT2lKQmJtUmxjbk52YmlKOUxDSmxiV0ZwYkNJNkltVmtkV0Z5Wkc5aGJtUmxjbk52YmpRelFHZHRZV2xzTG1OdmJTSXNJbVZ0WVdsc1gzWmxjbWxtYVdWa0lqcDBjblZsTENKbWRXeHNYMjVoYldVaU9pSmhibVJsY25OdmJqQXdNREVpTENKcGMzTWlPaUpvZEhSd2N6b3ZMMlJwYzJOdmNtUXVZMjl0TDJGd2FTSXNJbTVoYldVaU9pSmhibVJsY25OdmJqQXdNREVqTUNJc0luQm9iMjVsWDNabGNtbG1hV1ZrSWpwbVlXeHpaU3dpY0dsamRIVnlaU0k2SW1oMGRIQnpPaTh2WTJSdUxtUnBjMk52Y21SaGNIQXVZMjl0TDJGMllYUmhjbk12TWprMk1EazROREV3TXpVNE9EazROams1TDJVME9XUmtZall6WkRsak9XWmpZVGcwWkdVMFl6RTNOemRtWXpCaFl6ZG1MbkJ1WnlJc0luQnliM1pwWkdWeVgybGtJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWMzVmlJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWRYTmxjbTVoYldVaU9pSkJibVJsY25OdmJqUXpNVE1pZlN3aWNtOXNaU0k2SW1GMWRHaGxiblJwWTJGMFpXUWlMQ0poWVd3aU9pSmhZV3d4SWl3aVlXMXlJanBiZXlKdFpYUm9iMlFpT2lKdllYVjBhQ0lzSW5ScGJXVnpkR0Z0Y0NJNk1UYzVOREkzTURFd01IMWRMQ0p6WlhOemFXOXVYMmxrSWpvaU5HWXdZek5pWkdRdFkyWTNZUzAwT1dVekxXRTFaR010T1RrM09EWXhNREprWmpJd0lpd2lhWE5mWVc1dmJubHRiM1Z6SWpwbVlXeHpaWDAub0dVTHdDTUM5c013a2lLMlp6Qm1ZMUhtS25JNEk5SExMUnZKWkxSaWxKTldyQWFmem5EYXBjTXZUZEtHRXl6LVRsdW9Wc1I3T3ZCUzNoR1JkcVN5Z2ciLCAidG9rZW5fdHlwZSI6ICJiZWFyZXIiLCAiZXhwaXJlc19pbiI6IDM2MDAsICJleHBpcmVzX2F0IjogMTc5NDI3Mzg4MywgInJlZnJlc2hfdG9rZW4iOiAiZ210b3E1bGszaDZrIiwgInVzZXIiOiB7ImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJhdWQiOiAiYXV0aGVudGljYXRlZCIsICJyb2xlIjogImF1dGhlbnRpY2F0ZWQiLCAiZW1haWwiOiAiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwgImVtYWlsX2NvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAicGhvbmUiOiAiIiwgImNvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAibGFzdF9zaWduX2luX2F0IjogIjIwMjYtMTEtMTBUMDA6MjE6NDAuNjE0NTY1WiIsICJhcHBfbWV0YWRhdGEiOiB7Im1lbWJlciI6IHRydWUsICJwcm92aWRlciI6ICJlbWFpbCIsICJwcm92aWRlcnMiOiBbImVtYWlsIiwgImRpc2NvcmQiXX0sICJ1c2VyX21ldGFkYXRhIjogeyJhdmF0YXIiOiAiIiwgImF2YXRhcl91cmwiOiAiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiNjNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwgImN1c3RvbV9jbGFpbXMiOiB7Imdsb2JhbF9uYW1lIjogIkFuZGVyc29uIn0sICJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiB0cnVlL; sb-auth-auth-token.1=CAiZnVsbF9uYW1lIjogImFuZGVyc29uMDAwMSIsICJpc3MiOiAiaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkiLCAibmFtZSI6ICJhbmRlcnNvbjAwMDEjMCIsICJwaG9uZV92ZXJpZmllZCI6IGZhbHNlLCAicGljdHVyZSI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAicHJvdmlkZXJfaWQiOiAiMjk2MDk4NDEwMzU4ODk4Njk5IiwgInN1YiI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcm5hbWUiOiAiQW5kZXJzb240MzEzIn0sICJpZGVudGl0aWVzIjogW3siaWRlbnRpdHlfaWQiOiAiZWFjNTEzMDQtOGMxMC00ZDdhLWIxMjUtNzk2ZDRhYWRiZDdlIiwgImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJ1c2VyX2lkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJpZGVudGl0eV9kYXRhIjogeyJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiBmYWxzZSwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJzdWIiOiAiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3In0sICJwcm92aWRlciI6ICJlbWFpbCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODUzNzRaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9LCB7ImlkZW50aXR5X2lkIjogIjdmMTJjOTY2LWU4OWItNDZkYy04MjY5LWY2NDllYWUxZWE0YSIsICJpZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcl9pZCI6ICI0ZGMzMzRjZC1iOWE0LTQ3MTctOGZmZS1iMDZiYjYyNzNkMTciLCAiaWRlbnRpdHlfZGF0YSI6IHsiYXZhdGFyX3VybCI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAiY3VzdG9tX2NsYWltcyI6IHsiZ2xvYmFsX25hbWUiOiAiQW5kZXJzb24ifSwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSIsICJlbWFpbF92ZXJpZmllZCI6IHRydWUsICJmdWxsX25hbWUiOiAiYW5kZXJzb24wMDAxIiwgImlzcyI6ICJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsICJuYW1lIjogImFuZGVyc29uMDAwMSMwIiwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJwaWN0dXJlIjogImh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsICJwcm92aWRlcl9pZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAic3ViIjogIjI5NjA5ODQxMDM1ODg5ODY5OSJ9LCAicHJvdmlkZXIiOiAiZGlzY29yZCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0xMC0yMFQyMDoxNTo1MS42MjU1MzNaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0xMC0yMFQyMDoxNTo1MS42MjU1OTJaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNi0xMS0xMFQwMDoyMTozOS45MDgyNDdaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9XSwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODMxODlaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNi0xMS0xMFQwMDoyMjo1Ni45MjgzMjJaIiwgImlzX2Fub255bW91cyI6IGZhbHNlfX0=')
 refresh_token = ''
 current_cookie = DEFAULT_INITIAL_COOKIE
 cookie_lock = threading.Lock()
@@ -53,6 +53,31 @@ def norm(text):
     t = text.lower()
     t = re.sub(r'[\(\)\[\]\{\}\:\"\'\-\_\.\,\!\?]', ' ', t)
     return ' '.join(t.split())
+
+def is_cookie_expired(cookie_str, buffer_seconds=300):
+    if not cookie_str:
+        return True
+    try:
+        chunk_map = {}
+        for part in cookie_str.split(';'):
+            part = part.strip()
+            if '=' in part:
+                k, v = part.split('=', 1)
+                if 'auth-token' in k:
+                    chunk_map[k.split('.')[-1]] = v
+        if not chunk_map:
+            return True
+        raw_b64 = ''.join(chunk_map[str(i)] for i in range(len(chunk_map)) if str(i) in chunk_map)
+        if raw_b64.startswith('base64-'):
+            raw_b64 = raw_b64[7:]
+        raw_b64 += '=' * (-len(raw_b64) % 4)
+        sess = json.loads(base64.b64decode(raw_b64).decode('utf-8'))
+        exp = sess.get('expires_at')
+        if not exp:
+            return True
+        return time.time() >= (exp - buffer_seconds)
+    except Exception:
+        return True
 
 def init_tokens():
     global refresh_token, current_cookie
@@ -86,8 +111,11 @@ def init_tokens():
                             rf = sess.get('refresh_token')
                             if rf:
                                 refresh_token = rf
-                                print(f"[Anitsu Cloud] Extracted fresh refresh_token from {cfg_path}: {rf[:6]}***")
-                                refresh_session()
+                                print(f"[Anitsu Cloud] Extracted refresh_token from {cfg_path}: {rf[:6]}***")
+                                if is_cookie_expired(current_cookie):
+                                    refresh_session()
+                                else:
+                                    print(f"[Anitsu Cloud] Cookie is still valid. Skipping immediate refresh.")
                                 return
             except Exception as e:
                 print(f"[Anitsu Cloud] Error reading {cfg_path}:", e)
@@ -99,13 +127,15 @@ def init_tokens():
                 if saved:
                     refresh_token = saved
                     print(f"[Anitsu Cloud] Loaded refresh_token from local cache: {refresh_token[:6]}***")
-                    refresh_session()
+                    if is_cookie_expired(current_cookie):
+                        refresh_session()
                     return
         except Exception:
             pass
     refresh_token = os.getenv('ANITSU_REFRESH_TOKEN', DEFAULT_FALLBACK_TOKEN)
     print(f"[Anitsu Cloud] Using fallback refresh_token: {refresh_token[:6]}***")
-    refresh_session()
+    if is_cookie_expired(current_cookie):
+        refresh_session()
 GENERIC_WORDS = {'no', 'the', 'da', 'de', 'do', 'new', 'brand', 'season', 'movie', 'filme', 'part', 'arc', 'to', 'wa', 'ga', 'o', 'a', 'in', 'of', 'and', 's01', 's02', 's03', 's04', 's1', 's2', 'um', 'uma', 'dia', 'man'}
 cache_title_resolution = {}
 
@@ -176,14 +206,16 @@ def refresh_session():
 
 def refresh_worker():
     while True:
-        time.sleep(1800)
-        refresh_session()
+        time.sleep(900)
+        if is_cookie_expired(current_cookie, buffer_seconds=900):
+            refresh_session()
 
 @app.on_event("startup")
 def startup():
     init_tokens()
     init_catalog()
-    refresh_session()
+    if is_cookie_expired(current_cookie):
+        refresh_session()
     t = threading.Thread(target=refresh_worker, daemon=True)
     t.start()
 
