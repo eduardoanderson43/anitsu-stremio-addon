@@ -137,96 +137,16 @@ def init_tokens():
     if is_cookie_expired(current_cookie):
         refresh_session()
 GENERIC_WORDS = {'no', 'the', 'da', 'de', 'do', 'new', 'brand', 'season', 'movie', 'filme', 'part', 'arc', 'to', 'wa', 'ga', 'o', 'a', 'in', 'of', 'and', 's01', 's02', 's03', 's04', 's1', 's2', 'um', 'uma', 'dia', 'man'}
+import ptbr_subtitles
+
 cache_title_resolution = {}
 cache_subtitles = {}
 
 def get_subtitles_for_media(video_id, title="", is_movie=False):
-    cache_key = f"{video_id}:{is_movie}"
-    if cache_key in cache_subtitles:
-        return cache_subtitles[cache_key]
-
-    parts = video_id.split(':')
-    imdb_id = None
-    season_num = 1
-    ep_num = 1
-
-    if video_id.startswith('tt'):
-        imdb_id = parts[0]
-        if len(parts) >= 3:
-            season_num = int(parts[1])
-            ep_num = int(parts[2])
-        elif len(parts) == 2:
-            season_num = 1
-            ep_num = int(parts[1])
-    elif video_id.startswith('kitsu') and len(parts) >= 2:
-        kid = parts[1]
-        ep_num = int(parts[2]) if len(parts) >= 3 else 1
-        try:
-            r = requests.get(f'https://api.ani.zip/mappings?kitsu_id={kid}', headers={'User-Agent': UA}, timeout=2.5)
-            if r.status_code == 200:
-                imdb_id = r.json().get('mappings', {}).get('imdb_id')
-        except Exception:
-            pass
-    elif video_id.startswith('mal') and len(parts) >= 2:
-        mal_id = parts[1]
-        ep_num = int(parts[2]) if len(parts) >= 3 else 1
-        try:
-            r = requests.get(f'https://api.ani.zip/mappings?mal_id={mal_id}', headers={'User-Agent': UA}, timeout=2.5)
-            if r.status_code == 200:
-                imdb_id = r.json().get('mappings', {}).get('imdb_id')
-        except Exception:
-            pass
-
-    if not imdb_id and title:
-        try:
-            prefer_t = "movie" if is_movie else "series"
-            r = requests.get(f'https://v3-cinemeta.strem.io/catalog/{prefer_t}/top/search={urllib.parse.quote(title)}.json', headers={'User-Agent': UA}, timeout=2.0)
-            if r.status_code == 200:
-                metas = r.json().get('metas', [])
-                if metas:
-                    imdb_id = metas[0].get('id')
-        except Exception:
-            pass
-
-    subs = []
-    if imdb_id:
-        # 1. LegendasBR
-        try:
-            if is_movie:
-                url = f'https://legendas.legendasbr.site/subtitles/movie/{imdb_id}.json'
-            else:
-                url = f'https://legendas.legendasbr.site/subtitles/series/{imdb_id}%3A{season_num}%3A{ep_num}.json'
-            r = requests.get(url, headers={'User-Agent': UA}, timeout=3.0)
-            if r.status_code == 200:
-                for s in r.json().get('subtitles', []):
-                    subs.append({
-                        'id': s.get('id', 'legbr-por'),
-                        'url': s.get('url'),
-                        'lang': 'por'
-                    })
-        except Exception:
-            pass
-
-        # 2. LegendasDivx
-        try:
-            if is_movie:
-                ld_url = f'https://e1d6cc1ff4a7-legendasdivx-stremio.baby-beamup.club/%7B%22token%22%3A%22530373430363.5b9179f61f816aa0d70d79739098b0f0%22%2C%22langs%22%3A%22br%22%2C%22rips%22%3A0%2C%22pcks%22%3A1%7D/subtitles/movie/{imdb_id}.json'
-            else:
-                ld_url = f'https://e1d6cc1ff4a7-legendasdivx-stremio.baby-beamup.club/%7B%22token%22%3A%22530373430363.5b9179f61f816aa0d70d79739098b0f0%22%2C%22langs%22%3A%22br%22%2C%22rips%22%3A0%2C%22pcks%22%3A1%7D/subtitles/series/{imdb_id}%3A{season_num}%3A{ep_num}.json'
-            r = requests.get(ld_url, headers={'User-Agent': UA}, timeout=2.5)
-            if r.status_code == 200:
-                for item in r.json().get('subtitles', []):
-                    subs.append({
-                        'id': item.get('id'),
-                        'url': item.get('url'),
-                        'lang': 'por'
-                    })
-        except Exception:
-            pass
-
-    if subs:
-        cache_subtitles[cache_key] = subs
-    return subs
+    # Anitsu Cloud anime releases already contain PT-BR fansub/dubbed tracks natively.
+    # Avoid slow/expiring LegendasBR links and wrong-movie LegendasDivx overrides inside stream objects;
+    # Stremio fetches external subtitles cleanly via /ptbr-subs/ on demand.
+    return []
 
 def init_catalog():
     global animes_list, title_index, tmdb_index
@@ -867,11 +787,11 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
 def get_anitsu_manifest():
     return {
         "id": "community.anitsu.cloud",
-        "version": "1.3.0",
+        "version": "1.3.1",
         "name": "☁️ Anitsu Nuvem [PT-BR]",
-        "description": "5.800+ Animes, Filmes de Anime, Desenhos e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu com múltiplas opções de releases e legendas integradas!",
+        "description": "5.800+ Animes, Filmes de Anime, Desenhos e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu com múltiplas opções de releases!",
         "logo": "https://nuvem.anitsu.moe/icon.png",
-        "resources": ["catalog", "meta", "stream", "subtitles"],
+        "resources": ["catalog", "meta", "stream"],
         "types": ["anime", "series", "movie"],
         "idPrefixes": ["anitsu:", "kitsu", "tt", "mal"],
         "catalogs": [
@@ -1312,11 +1232,38 @@ def stream(type_: str, video_id: str, request: Request = None):
 
     return {"streams": streams}
 
+@app.get("/ptbr-subs/manifest.json")
+def ptbr_subs_manifest():
+    return ptbr_subtitles.PTBR_SUB_MANIFEST
+
+
+@app.get("/ptbr-subs/subdl-srt")
+def ptbr_subs_subdl_srt(u: str = "", ep: int = None):
+    return ptbr_subtitles.fetch_subdl_srt_response(u, ep=ep)
+
+
+@app.get("/ptbr-subs/subtitles/{type_}/{video_id}/{extra}.json")
+def ptbr_subs_with_extra(type_: str, video_id: str, extra: str, request: Request):
+    base_url = ptbr_subtitles.build_public_base_url(request)
+    return {"subtitles": ptbr_subtitles.get_ptbr_subtitles(type_, video_id, extra=extra, public_base_url=base_url)}
+
+
+@app.get("/ptbr-subs/subtitles/{type_}/{video_id}.json")
+def ptbr_subs_no_extra(type_: str, video_id: str, request: Request):
+    base_url = ptbr_subtitles.build_public_base_url(request)
+    return {"subtitles": ptbr_subtitles.get_ptbr_subtitles(type_, video_id, extra="", public_base_url=base_url)}
+
+
+@app.get("/subtitles/{type_}/{video_id}/{extra}.json")
+def subtitles_with_extra(type_: str, video_id: str, extra: str, request: Request):
+    base_url = ptbr_subtitles.build_public_base_url(request)
+    return {"subtitles": ptbr_subtitles.get_ptbr_subtitles(type_, video_id, extra=extra, public_base_url=base_url)}
+
+
 @app.get("/subtitles/{type_}/{video_id}.json")
-def subtitles(type_: str, video_id: str):
-    is_movie = type_ == "movie"
-    subs = get_subtitles_for_media(video_id, is_movie=is_movie)
-    return {"subtitles": subs}
+def subtitles(type_: str, video_id: str, request: Request):
+    base_url = ptbr_subtitles.build_public_base_url(request)
+    return {"subtitles": ptbr_subtitles.get_ptbr_subtitles(type_, video_id, extra="", public_base_url=base_url)}
 
 @app.get("/proxy-stream")
 def proxy_stream(path: str, request: Request):
