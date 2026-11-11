@@ -137,15 +137,12 @@ def init_tokens():
     if is_cookie_expired(current_cookie):
         refresh_session()
 GENERIC_WORDS = {'no', 'the', 'da', 'de', 'do', 'new', 'brand', 'season', 'movie', 'filme', 'part', 'arc', 'to', 'wa', 'ga', 'o', 'a', 'in', 'of', 'and', 's01', 's02', 's03', 's04', 's1', 's2', 'um', 'uma', 'dia', 'man'}
-import ptbr_subtitles
-
 cache_title_resolution = {}
 cache_subtitles = {}
 
 def get_subtitles_for_media(video_id, title="", is_movie=False):
     # Anitsu Cloud anime releases already contain PT-BR fansub/dubbed tracks natively.
-    # Avoid slow/expiring LegendasBR links and wrong-movie LegendasDivx overrides inside stream objects;
-    # Stremio fetches external subtitles cleanly via /ptbr-subs/ on demand.
+    # Avoid slow/expiring LegendasBR links and wrong-movie LegendasDivx overrides inside stream objects.
     return []
 
 def init_catalog():
@@ -787,7 +784,7 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
 def get_anitsu_manifest():
     return {
         "id": "community.anitsu.cloud",
-        "version": "1.3.1",
+        "version": "1.3.2",
         "name": "☁️ Anitsu Nuvem [PT-BR]",
         "description": "5.800+ Animes, Filmes de Anime, Desenhos e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu com múltiplas opções de releases!",
         "logo": "https://nuvem.anitsu.moe/icon.png",
@@ -1232,38 +1229,14 @@ def stream(type_: str, video_id: str, request: Request = None):
 
     return {"streams": streams}
 
-@app.get("/ptbr-subs/manifest.json")
-def ptbr_subs_manifest():
-    return ptbr_subtitles.PTBR_SUB_MANIFEST
-
-
-@app.get("/ptbr-subs/subdl-srt")
-def ptbr_subs_subdl_srt(u: str = "", ep: int = None):
-    return ptbr_subtitles.fetch_subdl_srt_response(u, ep=ep)
-
-
-@app.get("/ptbr-subs/subtitles/{type_}/{video_id}/{extra}.json")
-def ptbr_subs_with_extra(type_: str, video_id: str, extra: str, request: Request):
-    base_url = ptbr_subtitles.build_public_base_url(request)
-    return {"subtitles": ptbr_subtitles.get_ptbr_subtitles(type_, video_id, extra=extra, public_base_url=base_url)}
-
-
-@app.get("/ptbr-subs/subtitles/{type_}/{video_id}.json")
-def ptbr_subs_no_extra(type_: str, video_id: str, request: Request):
-    base_url = ptbr_subtitles.build_public_base_url(request)
-    return {"subtitles": ptbr_subtitles.get_ptbr_subtitles(type_, video_id, extra="", public_base_url=base_url)}
-
-
 @app.get("/subtitles/{type_}/{video_id}/{extra}.json")
-def subtitles_with_extra(type_: str, video_id: str, extra: str, request: Request):
-    base_url = ptbr_subtitles.build_public_base_url(request)
-    return {"subtitles": ptbr_subtitles.get_ptbr_subtitles(type_, video_id, extra=extra, public_base_url=base_url)}
+def subtitles_with_extra(type_: str, video_id: str, extra: str):
+    return {"subtitles": []}
 
 
 @app.get("/subtitles/{type_}/{video_id}.json")
-def subtitles(type_: str, video_id: str, request: Request):
-    base_url = ptbr_subtitles.build_public_base_url(request)
-    return {"subtitles": ptbr_subtitles.get_ptbr_subtitles(type_, video_id, extra="", public_base_url=base_url)}
+def subtitles(type_: str, video_id: str):
+    return {"subtitles": []}
 
 @app.get("/proxy-stream")
 def proxy_stream(path: str, request: Request):
