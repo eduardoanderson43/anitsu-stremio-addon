@@ -10,6 +10,12 @@ import urllib.request
 import urllib.parse
 import threading
 import requests
+from requests.adapters import HTTPAdapter
+
+http_session = requests.Session()
+_adapter = HTTPAdapter(pool_connections=16, pool_maxsize=32)
+http_session.mount("https://", _adapter)
+http_session.mount("http://", _adapter)
 
 app = FastAPI(title="Anitsu Cloud & Filler Addon for Stremio")
 
@@ -28,8 +34,8 @@ SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsIm
 TOKEN_CACHE_FILE = os.path.join(os.path.dirname(__file__), 'token_cache.json')
 CATALOG_FILE = os.path.join(os.path.dirname(__file__), 'catalog_min.json')
 
-DEFAULT_FALLBACK_TOKEN = 'jsifzlwkg2m6'
-DEFAULT_INITIAL_COOKIE = os.getenv('ANITSU_COOKIE', 'sb-auth-auth-token.0=base64-eyJhY2Nlc3NfdG9rZW4iOiJleUpoYkdjaU9pSkZVekkxTmlJc0ltdHBaQ0k2SW1OaU9XUTBaRGt5TFRsak9XVXRORE5qTVMxaE16QmpMVGhsWTJWaU5qY3lNbU5sT0NJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcGMzTWlPaUpvZEhSd2N6b3ZMMkYxZEdndVlXNXBkSE4xTG0xdlpTOWhkWFJvTDNZeElpd2ljM1ZpSWpvaU5HUmpNek0wWTJRdFlqbGhOQzAwTnpFM0xUaG1abVV0WWpBMlltSTJNamN6WkRFM0lpd2lZWFZrSWpvaVlYVjBhR1Z1ZEdsallYUmxaQ0lzSW1WNGNDSTZNVGM1TkRNME5EQXdNU3dpYVdGMElqb3hOemswTXpRd05EQXhMQ0psYldGcGJDSTZJbVZrZFdGeVpHOWhibVJsY25OdmJqUXpRR2R0WVdsc0xtTnZiU0lzSW5Cb2IyNWxJam9pSWl3aVlYQndYMjFsZEdGa1lYUmhJanA3SW0xbGJXSmxjaUk2ZEhKMVpTd2ljSEp2ZG1sa1pYSWlPaUpsYldGcGJDSXNJbkJ5YjNacFpHVnljeUk2V3lKbGJXRnBiQ0lzSW1ScGMyTnZjbVFpWFgwc0luVnpaWEpmYldWMFlXUmhkR0VpT25zaVlYWmhkR0Z5SWpvaUlpd2lZWFpoZEdGeVgzVnliQ0k2SW1oMGRIQnpPaTh2WTJSdUxtUnBjMk52Y21SaGNIQXVZMjl0TDJGMllYUmhjbk12TWprMk1EazROREV3TXpVNE9EazROams1TDJVME9XUmtZall6WkRsak9XWmpZVGcwWkdVMFl6RTNOemRtWXpCaFl6ZG1MbkJ1WnlJc0ltTjFjM1J2YlY5amJHRnBiWE1pT25zaVoyeHZZbUZzWDI1aGJXVWlPaUpCYm1SbGNuTnZiaUo5TENKbGJXRnBiQ0k2SW1Wa2RXRnlaRzloYm1SbGNuTnZialF6UUdkdFlXbHNMbU52YlNJc0ltVnRZV2xzWDNabGNtbG1hV1ZrSWpwMGNuVmxMQ0ptZFd4c1gyNWhiV1VpT2lKaGJtUmxjbk52YmpBd01ERWlMQ0pwYzNNaU9pSm9kSFJ3Y3pvdkwyUnBjMk52Y21RdVkyOXRMMkZ3YVNJc0ltNWhiV1VpT2lKaGJtUmxjbk52YmpBd01ERWpNQ0lzSW5Cb2IyNWxYM1psY21sbWFXVmtJanBtWVd4elpTd2ljR2xqZEhWeVpTSTZJbWgwZEhCek9pOHZZMlJ1TG1ScGMyTnZjbVJoY0hBdVkyOXRMMkYyWVhSaGNuTXZNamsyTURrNE5ERXdNelU0T0RrNE5qazVMMlUwT1dSa1lqWXpaRGxqT1daallUZzBaR1UwWXpFM056ZG1ZekJoWXpkbUxuQnVaeUlzSW5CeWIzWnBaR1Z5WDJsa0lqb2lNamsyTURrNE5ERXdNelU0T0RrNE5qazVJaXdpYzNWaUlqb2lNamsyTURrNE5ERXdNelU0T0RrNE5qazVJaXdpZFhObGNtNWhiV1VpT2lKQmJtUmxjbk52YmpRek1UTWlmU3dpY205c1pTSTZJbUYxZEdobGJuUnBZMkYwWldRaUxDSmhZV3dpT2lKaFlXd3hJaXdpWVcxeUlqcGJleUp0WlhSb2IyUWlPaUp2WVhWMGFDSXNJblJwYldWemRHRnRjQ0k2TVRjNU5ETTBNRFF3TVgxZExDSnpaWE56YVc5dVgybGtJam9pWlRVMVpESTFNemd0TkRNek55MDBZamsyTFRneU9UVXRNamczT1RJM01XUmhOVFU0SWl3aWFYTmZZVzV2Ym5sdGIzVnpJanBtWVd4elpYMC5jVjJXN1FYX2lWeTdBT3RVX1F2R3JlU2FVQzZORTF5YkljbjFGNVM5dzQzUU5XcUZlYU5Qb3VfSHdHS2ZCcl90N1NDenBuakFRQWZ6STNBVXhhYmIyQSIsInRva2VuX3R5cGUiOiJiZWFyZXIiLCJleHBpcmVzX2luIjozNjAwLCJleHBpcmVzX2F0IjoxNzk0MzQ0MDAxLCJyZWZyZXNoX3Rva2VuIjoianNpZnpsd2tnMm02IiwidXNlciI6eyJpZCI6IjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsImF1ZCI6ImF1dGhlbnRpY2F0ZWQiLCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImVtYWlsIjoiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwiZW1haWxfY29uZmlybWVkX2F0IjoiMjAyNC0wMi0xNVQwMzowNzoyOC4xODY3MTVaIiwicGhvbmUiOiIiLCJjb25maXJtZWRfYXQiOiIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCJsYXN0X3NpZ25faW5fYXQiOiIyMDI2LTExLTEwVDE5OjUzOjIxLjcwOTg5MTU2N1oiLCJhcHBfbWV0YWRhdGEiOnsibWVtYmVyIjp0cnVlLCJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIiwiZGlzY29yZCJdfSwidXNlcl9tZXRhZGF0YSI6eyJhdmF0YXIiOiIiLCJhdmF0YXJfdXJsIjoiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiNjNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwiY3VzdG9tX2NsYWltcyI6eyJnbG9iYWxfbmFtZSI6IkFuZGVyc29uIn0sImVtYWlsIjoiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZ1bGxfbmFtZSI6ImFuZGVyc29uMDAwMSIsImlzcyI6Imh0dHBzOi8vZGlzY29yZC5jb20vYXBpIiwibmFtZSI6ImFuZGVyc29uMDAwMSMwIiwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJwaWN0dXJlIjoiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiN; sb-auth-auth-token.1=jNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwicHJvdmlkZXJfaWQiOiIyOTYwOTg0MTAzNTg4OTg2OTkiLCJzdWIiOiIyOTYwOTg0MTAzNTg4OTg2OTkiLCJ1c2VybmFtZSI6IkFuZGVyc29uNDMxMyJ9LCJpZGVudGl0aWVzIjpbeyJpZGVudGl0eV9pZCI6ImVhYzUxMzA0LThjMTAtNGQ3YS1iMTI1LTc5NmQ0YWFkYmQ3ZSIsImlkIjoiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3IiwidXNlcl9pZCI6IjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsImlkZW50aXR5X2RhdGEiOnsiZW1haWwiOiJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwic3ViIjoiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3In0sInByb3ZpZGVyIjoiZW1haWwiLCJsYXN0X3NpZ25faW5fYXQiOiIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NTM3NFoiLCJjcmVhdGVkX2F0IjoiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwidXBkYXRlZF9hdCI6IjIwMjQtMDItMTVUMDM6MDc6MjguMTg1NDIzWiIsImVtYWlsIjoiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIn0seyJpZGVudGl0eV9pZCI6IjdmMTJjOTY2LWU4OWItNDZkYy04MjY5LWY2NDllYWUxZWE0YSIsImlkIjoiMjk2MDk4NDEwMzU4ODk4Njk5IiwidXNlcl9pZCI6IjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsImlkZW50aXR5X2RhdGEiOnsiYXZhdGFyX3VybCI6Imh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsImN1c3RvbV9jbGFpbXMiOnsiZ2xvYmFsX25hbWUiOiJBbmRlcnNvbiJ9LCJlbWFpbCI6ImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJmdWxsX25hbWUiOiJhbmRlcnNvbjAwMDEiLCJpc3MiOiJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsIm5hbWUiOiJhbmRlcnNvbjAwMDEjMCIsInBob25lX3ZlcmlmaWVkIjpmYWxzZSwicGljdHVyZSI6Imh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsInByb3ZpZGVyX2lkIjoiMjk2MDk4NDEwMzU4ODk4Njk5Iiwic3ViIjoiMjk2MDk4NDEwMzU4ODk4Njk5In0sInByb3ZpZGVyIjoiZGlzY29yZCIsImxhc3Rfc2lnbl9pbl9hdCI6IjIwMjQtMTAtMjBUMjA6MTU6NTEuNjI1NTMzWiIsImNyZWF0ZWRfYXQiOiIyMDI0LTEwLTIwVDIwOjE1OjUxLjYyNTU5MloiLCJ1cGRhdGVkX2F0IjoiMjAyNi0xMS0xMFQxOTo1MzoxOS45OTI0MTlaIiwiZW1haWwiOiJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20ifV0sImNyZWF0ZWRfYXQiOiIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4MzE4OVoiLCJ1cGRhdGVkX2F0IjoiMjAyNi0xMS0xMFQxOTo1MzoyMS43MTY1OTFaIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0sInByb3ZpZGVyX3Rva2VuIjoiTVRJM01EVTJNVEF3TVRZMU56UTNNVEF3TmcuaFhkOEFnVExrODJvVE1CSTdCMEZMOExvSnJQM2trIiwicHJvdmlkZXJfcmVmcmVzaF90b2tlbiI6IjUzVk5yNjUwYXhmeEp3WFNsbm1BZFJWUUxucUZVUSJ9')
+DEFAULT_FALLBACK_TOKEN = 'f4j4wylius2q'
+DEFAULT_INITIAL_COOKIE = os.getenv('ANITSU_COOKIE', 'sb-auth-auth-token.0=base64-eyJhY2Nlc3NfdG9rZW4iOiAiZXlKaGJHY2lPaUpGVXpJMU5pSXNJbXRwWkNJNkltTmlPV1EwWkRreUxUbGpPV1V0TkROak1TMWhNekJqTFRobFkyVmlOamN5TW1ObE9DSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKb2RIUndjem92TDJGMWRHZ3VZVzVwZEhOMUxtMXZaUzloZFhSb0wzWXhJaXdpYzNWaUlqb2lOR1JqTXpNMFkyUXRZamxoTkMwME56RTNMVGhtWm1VdFlqQTJZbUkyTWpjelpERTNJaXdpWVhWa0lqb2lZWFYwYUdWdWRHbGpZWFJsWkNJc0ltVjRjQ0k2TVRjNU5EVXdPVFF3Tml3aWFXRjBJam94TnprME5UQTFPREEyTENKbGJXRnBiQ0k2SW1Wa2RXRnlaRzloYm1SbGNuTnZialF6UUdkdFlXbHNMbU52YlNJc0luQm9iMjVsSWpvaUlpd2lZWEJ3WDIxbGRHRmtZWFJoSWpwN0ltMWxiV0psY2lJNmRISjFaU3dpY0hKdmRtbGtaWElpT2lKbGJXRnBiQ0lzSW5CeWIzWnBaR1Z5Y3lJNld5SmxiV0ZwYkNJc0ltUnBjMk52Y21RaVhYMHNJblZ6WlhKZmJXVjBZV1JoZEdFaU9uc2lZWFpoZEdGeUlqb2lJaXdpWVhaaGRHRnlYM1Z5YkNJNkltaDBkSEJ6T2k4dlkyUnVMbVJwYzJOdmNtUmhjSEF1WTI5dEwyRjJZWFJoY25Ndk1qazJNRGs0TkRFd016VTRPRGs0TmprNUwyVTBPV1JrWWpZelpEbGpPV1pqWVRnMFpHVTBZekUzTnpkbVl6QmhZemRtTG5CdVp5SXNJbU4xYzNSdmJWOWpiR0ZwYlhNaU9uc2laMnh2WW1Gc1gyNWhiV1VpT2lKQmJtUmxjbk52YmlKOUxDSmxiV0ZwYkNJNkltVmtkV0Z5Wkc5aGJtUmxjbk52YmpRelFHZHRZV2xzTG1OdmJTSXNJbVZ0WVdsc1gzWmxjbWxtYVdWa0lqcDBjblZsTENKbWRXeHNYMjVoYldVaU9pSmhibVJsY25OdmJqQXdNREVpTENKcGMzTWlPaUpvZEhSd2N6b3ZMMlJwYzJOdmNtUXVZMjl0TDJGd2FTSXNJbTVoYldVaU9pSmhibVJsY25OdmJqQXdNREVqTUNJc0luQm9iMjVsWDNabGNtbG1hV1ZrSWpwbVlXeHpaU3dpY0dsamRIVnlaU0k2SW1oMGRIQnpPaTh2WTJSdUxtUnBjMk52Y21SaGNIQXVZMjl0TDJGMllYUmhjbk12TWprMk1EazROREV3TXpVNE9EazROams1TDJVME9XUmtZall6WkRsak9XWmpZVGcwWkdVMFl6RTNOemRtWXpCaFl6ZG1MbkJ1WnlJc0luQnliM1pwWkdWeVgybGtJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWMzVmlJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWRYTmxjbTVoYldVaU9pSkJibVJsY25OdmJqUXpNVE1pZlN3aWNtOXNaU0k2SW1GMWRHaGxiblJwWTJGMFpXUWlMQ0poWVd3aU9pSmhZV3d4SWl3aVlXMXlJanBiZXlKdFpYUm9iMlFpT2lKdllYVjBhQ0lzSW5ScGJXVnpkR0Z0Y0NJNk1UYzVORE0wTURRd01YMWRMQ0p6WlhOemFXOXVYMmxrSWpvaVpUVTFaREkxTXpndE5ETXpOeTAwWWprMkxUZ3lPVFV0TWpnM09USTNNV1JoTlRVNElpd2lhWE5mWVc1dmJubHRiM1Z6SWpwbVlXeHpaWDAuLXM2YnRDYXhpTjQ1dGVLenVJV3d1V2J3WlFjQ3RLc2JhTFdlaEgtcERqUmM2NUk0d3llQ0d6ajBpOHpBVDJnaHZCbmxKajFIbGhZdm5kZ0s3c1NKS2ciLCAidG9rZW5fdHlwZSI6ICJiZWFyZXIiLCAiZXhwaXJlc19pbiI6IDM2MDAsICJleHBpcmVzX2F0IjogMTc5NDUwOTQwNiwgInJlZnJlc2hfdG9rZW4iOiAiZjRqNHd5bGl1czJxIiwgInVzZXIiOiB7ImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJhdWQiOiAiYXV0aGVudGljYXRlZCIsICJyb2xlIjogImF1dGhlbnRpY2F0ZWQiLCAiZW1haWwiOiAiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwgImVtYWlsX2NvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAicGhvbmUiOiAiIiwgImNvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAibGFzdF9zaWduX2luX2F0IjogIjIwMjYtMTEtMTBUMTk6NTM6MjEuNzA5ODkxWiIsICJhcHBfbWV0YWRhdGEiOiB7Im1lbWJlciI6IHRydWUsICJwcm92aWRlciI6ICJlbWFpbCIsICJwcm92aWRlcnMiOiBbImVtYWlsIiwgImRpc2NvcmQiXX0sICJ1c2VyX21ldGFkYXRhIjogeyJhdmF0YXIiOiAiIiwgImF2YXRhcl91cmwiOiAiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiNjNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwgImN1c3RvbV9jbGFpbXMiOiB7Imdsb2JhbF9uYW1lIjogIkFuZGVyc29uIn0sICJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiB0cnVlL; sb-auth-auth-token.1=CAiZnVsbF9uYW1lIjogImFuZGVyc29uMDAwMSIsICJpc3MiOiAiaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkiLCAibmFtZSI6ICJhbmRlcnNvbjAwMDEjMCIsICJwaG9uZV92ZXJpZmllZCI6IGZhbHNlLCAicGljdHVyZSI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAicHJvdmlkZXJfaWQiOiAiMjk2MDk4NDEwMzU4ODk4Njk5IiwgInN1YiI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcm5hbWUiOiAiQW5kZXJzb240MzEzIn0sICJpZGVudGl0aWVzIjogW3siaWRlbnRpdHlfaWQiOiAiZWFjNTEzMDQtOGMxMC00ZDdhLWIxMjUtNzk2ZDRhYWRiZDdlIiwgImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJ1c2VyX2lkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJpZGVudGl0eV9kYXRhIjogeyJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiBmYWxzZSwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJzdWIiOiAiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3In0sICJwcm92aWRlciI6ICJlbWFpbCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODUzNzRaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9LCB7ImlkZW50aXR5X2lkIjogIjdmMTJjOTY2LWU4OWItNDZkYy04MjY5LWY2NDllYWUxZWE0YSIsICJpZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcl9pZCI6ICI0ZGMzMzRjZC1iOWE0LTQ3MTctOGZmZS1iMDZiYjYyNzNkMTciLCAiaWRlbnRpdHlfZGF0YSI6IHsiYXZhdGFyX3VybCI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAiY3VzdG9tX2NsYWltcyI6IHsiZ2xvYmFsX25hbWUiOiAiQW5kZXJzb24ifSwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSIsICJlbWFpbF92ZXJpZmllZCI6IHRydWUsICJmdWxsX25hbWUiOiAiYW5kZXJzb24wMDAxIiwgImlzcyI6ICJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsICJuYW1lIjogImFuZGVyc29uMDAwMSMwIiwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJwaWN0dXJlIjogImh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsICJwcm92aWRlcl9pZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAic3ViIjogIjI5NjA5ODQxMDM1ODg5ODY5OSJ9LCAicHJvdmlkZXIiOiAiZGlzY29yZCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0xMC0yMFQyMDoxNTo1MS42MjU1MzNaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0xMC0yMFQyMDoxNTo1MS42MjU1OTJaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNi0xMS0xMFQxOTo1MzoxOS45OTI0MTlaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9XSwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODMxODlaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNi0xMS0xMlQxNzo1MDowNi4zMzkxODZaIiwgImlzX2Fub255bW91cyI6IGZhbHNlfX0=')
 refresh_token = ''
 current_cookie = DEFAULT_INITIAL_COOKIE
 cookie_lock = threading.Lock()
@@ -172,7 +178,7 @@ def refresh_session():
         return
     try:
         url = f'{SUPABASE_URL}/auth/v1/token?grant_type=refresh_token'
-        res = requests.post(
+        res = http_session.post(
             url,
             json={'refresh_token': refresh_token},
             headers={'apikey': SUPABASE_ANON_KEY, 'Authorization': f'Bearer {SUPABASE_ANON_KEY}'},
@@ -412,13 +418,13 @@ def anitsu_list_files(path):
     url = 'https://nuvem.anitsu.moe/api/files?path=' + urllib.parse.quote(path)
     headers = {'Cookie': ck, 'User-Agent': UA, 'Accept': '*/*'}
     try:
-        r = requests.get(url, headers=headers, timeout=8)
+        r = http_session.get(url, headers=headers, timeout=8)
         if r.status_code == 401:
             refresh_session()
             with cookie_lock:
                 ck = current_cookie
             headers['Cookie'] = ck
-            r = requests.get(url, headers=headers, timeout=8)
+            r = http_session.get(url, headers=headers, timeout=8)
         if r.status_code == 200:
             files = r.json().get('files', [])
             cache_files[path] = files
@@ -446,7 +452,7 @@ def resolve_stremio_title(video_id, prefer_type="series"):
     resolved_title = None
     if kid:
         try:
-            r = requests.get(f'https://kitsu.io/api/edge/anime/{kid}', headers={'User-Agent': UA}, timeout=3.0)
+            r = http_session.get(f'https://kitsu.io/api/edge/anime/{kid}', headers={'User-Agent': UA}, timeout=3.0)
             if r.status_code == 200:
                 attrs = r.json().get('data', {}).get('attributes', {})
                 resolved_title = attrs.get('canonicalTitle') or attrs.get('titles', {}).get('en') or attrs.get('titles', {}).get('en_jp')
@@ -455,11 +461,11 @@ def resolve_stremio_title(video_id, prefer_type="series"):
     elif series_id.startswith('mal') and len(parts) >= 2:
         mal_id = parts[1]
         try:
-            r = requests.get(f'https://api.ani.zip/mappings?mal_id={mal_id}', headers={'User-Agent': UA}, timeout=3.0)
+            r = http_session.get(f'https://api.ani.zip/mappings?mal_id={mal_id}', headers={'User-Agent': UA}, timeout=3.0)
             if r.status_code == 200:
                 imdb_id = r.json().get('mappings', {}).get('imdb_id')
                 if imdb_id:
-                    r2 = requests.get(f'https://v3-cinemeta.strem.io/meta/{prefer_type}/{imdb_id}.json', headers={'User-Agent': UA}, timeout=2.0)
+                    r2 = http_session.get(f'https://v3-cinemeta.strem.io/meta/{prefer_type}/{imdb_id}.json', headers={'User-Agent': UA}, timeout=2.0)
                     if r2.status_code == 200:
                         resolved_title = r2.json().get('meta', {}).get('name')
         except Exception:
@@ -470,7 +476,7 @@ def resolve_stremio_title(video_id, prefer_type="series"):
         endpoints.append(f'https://v3-cinemeta.strem.io/meta/{alt_type}/{series_id}.json')
         for ep in endpoints:
             try:
-                r = requests.get(ep, headers={'User-Agent': UA}, timeout=2.0)
+                r = http_session.get(ep, headers={'User-Agent': UA}, timeout=2.0)
                 if r.status_code == 200:
                     name = r.json().get('meta', {}).get('name')
                     if name:
@@ -1249,13 +1255,13 @@ def proxy_stream(path: str, request: Request):
         headers['Range'] = range_header
 
     try:
-        req = requests.get(anitsu_url, headers=headers, stream=True, timeout=15)
+        req = http_session.get(anitsu_url, headers=headers, stream=True, timeout=15)
         if req.status_code == 401:
             refresh_session()
             with cookie_lock:
                 ck = current_cookie
             headers['Cookie'] = ck
-            req = requests.get(anitsu_url, headers=headers, stream=True, timeout=15)
+            req = http_session.get(anitsu_url, headers=headers, stream=True, timeout=15)
     except Exception as e:
         return Response(status_code=502, content="Failed to connect to cloud storage")
 
@@ -1299,7 +1305,7 @@ def get_filler_data(slug):
     if slug in cache_filler:
         return cache_filler[slug]
     try:
-        r = requests.get(f'https://www.animefillerlist.com/shows/{slug}', headers={'User-Agent': UA}, timeout=6)
+        r = http_session.get(f'https://www.animefillerlist.com/shows/{slug}', headers={'User-Agent': UA}, timeout=6)
         if r.status_code == 200:
             episodes = {}
             rows = re.findall(r'<tr class="([^"]*)" id="eps-(\d+)"><td class="Number">(\d+)</td><td class="Title"><a[^>]*>([^<]+)</a></td><td class="Type"><span>([^<]+)</span>', r.text)
