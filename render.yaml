@@ -10,4 +10,12 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: ANITSU_REFRESH_TOKEN
-        value: "jsifzlwkg2m6"
+        sync: false
+      - key: ANITSU_EMAIL
+        sync: false
+      - key: ANITSU_PASSWORD
+        sync: false
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false

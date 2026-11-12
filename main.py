@@ -31,8 +31,10 @@ UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 SUPABASE_URL = 'https://auth.anitsu.moe'
 SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzkxNzMwNDI5LCJleHAiOjE5NDk0MTA0Mjl9.vVKdnGvA4q4lZyZlLzQeO7qjc3J8kUlfnEke495fgjU'
 
-TOKEN_CACHE_FILE = os.path.join(os.path.dirname(__file__), 'token_cache.json')
-CATALOG_FILE = os.path.join(os.path.dirname(__file__), 'catalog_min.json')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+TMP_TOKEN_CACHE_FILE = '/tmp/anitsu_token_cache.json'
+TOKEN_CACHE_FILE = TMP_TOKEN_CACHE_FILE if os.getenv('VERCEL') else os.path.join(BASE_DIR, 'token_cache.json')
+CATALOG_FILE = os.path.join(BASE_DIR, 'catalog_min.json')
 
 DEFAULT_FALLBACK_TOKEN = 'f4j4wylius2q'
 DEFAULT_INITIAL_COOKIE = os.getenv('ANITSU_COOKIE', 'sb-auth-auth-token.0=base64-eyJhY2Nlc3NfdG9rZW4iOiAiZXlKaGJHY2lPaUpGVXpJMU5pSXNJbXRwWkNJNkltTmlPV1EwWkRreUxUbGpPV1V0TkROak1TMWhNekJqTFRobFkyVmlOamN5TW1ObE9DSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKb2RIUndjem92TDJGMWRHZ3VZVzVwZEhOMUxtMXZaUzloZFhSb0wzWXhJaXdpYzNWaUlqb2lOR1JqTXpNMFkyUXRZamxoTkMwME56RTNMVGhtWm1VdFlqQTJZbUkyTWpjelpERTNJaXdpWVhWa0lqb2lZWFYwYUdWdWRHbGpZWFJsWkNJc0ltVjRjQ0k2TVRjNU5EVXdPVFF3Tml3aWFXRjBJam94TnprME5UQTFPREEyTENKbGJXRnBiQ0k2SW1Wa2RXRnlaRzloYm1SbGNuTnZialF6UUdkdFlXbHNMbU52YlNJc0luQm9iMjVsSWpvaUlpd2lZWEJ3WDIxbGRHRmtZWFJoSWpwN0ltMWxiV0psY2lJNmRISjFaU3dpY0hKdmRtbGtaWElpT2lKbGJXRnBiQ0lzSW5CeWIzWnBaR1Z5Y3lJNld5SmxiV0ZwYkNJc0ltUnBjMk52Y21RaVhYMHNJblZ6WlhKZmJXVjBZV1JoZEdFaU9uc2lZWFpoZEdGeUlqb2lJaXdpWVhaaGRHRnlYM1Z5YkNJNkltaDBkSEJ6T2k4dlkyUnVMbVJwYzJOdmNtUmhjSEF1WTI5dEwyRjJZWFJoY25Ndk1qazJNRGs0TkRFd016VTRPRGs0TmprNUwyVTBPV1JrWWpZelpEbGpPV1pqWVRnMFpHVTBZekUzTnpkbVl6QmhZemRtTG5CdVp5SXNJbU4xYzNSdmJWOWpiR0ZwYlhNaU9uc2laMnh2WW1Gc1gyNWhiV1VpT2lKQmJtUmxjbk52YmlKOUxDSmxiV0ZwYkNJNkltVmtkV0Z5Wkc5aGJtUmxjbk52YmpRelFHZHRZV2xzTG1OdmJTSXNJbVZ0WVdsc1gzWmxjbWxtYVdWa0lqcDBjblZsTENKbWRXeHNYMjVoYldVaU9pSmhibVJsY25OdmJqQXdNREVpTENKcGMzTWlPaUpvZEhSd2N6b3ZMMlJwYzJOdmNtUXVZMjl0TDJGd2FTSXNJbTVoYldVaU9pSmhibVJsY25OdmJqQXdNREVqTUNJc0luQm9iMjVsWDNabGNtbG1hV1ZrSWpwbVlXeHpaU3dpY0dsamRIVnlaU0k2SW1oMGRIQnpPaTh2WTJSdUxtUnBjMk52Y21SaGNIQXVZMjl0TDJGMllYUmhjbk12TWprMk1EazROREV3TXpVNE9EazROams1TDJVME9XUmtZall6WkRsak9XWmpZVGcwWkdVMFl6RTNOemRtWXpCaFl6ZG1MbkJ1WnlJc0luQnliM1pwWkdWeVgybGtJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWMzVmlJam9pTWprMk1EazROREV3TXpVNE9EazROams1SWl3aWRYTmxjbTVoYldVaU9pSkJibVJsY25OdmJqUXpNVE1pZlN3aWNtOXNaU0k2SW1GMWRHaGxiblJwWTJGMFpXUWlMQ0poWVd3aU9pSmhZV3d4SWl3aVlXMXlJanBiZXlKdFpYUm9iMlFpT2lKdllYVjBhQ0lzSW5ScGJXVnpkR0Z0Y0NJNk1UYzVORE0wTURRd01YMWRMQ0p6WlhOemFXOXVYMmxrSWpvaVpUVTFaREkxTXpndE5ETXpOeTAwWWprMkxUZ3lPVFV0TWpnM09USTNNV1JoTlRVNElpd2lhWE5mWVc1dmJubHRiM1Z6SWpwbVlXeHpaWDAuLXM2YnRDYXhpTjQ1dGVLenVJV3d1V2J3WlFjQ3RLc2JhTFdlaEgtcERqUmM2NUk0d3llQ0d6ajBpOHpBVDJnaHZCbmxKajFIbGhZdm5kZ0s3c1NKS2ciLCAidG9rZW5fdHlwZSI6ICJiZWFyZXIiLCAiZXhwaXJlc19pbiI6IDM2MDAsICJleHBpcmVzX2F0IjogMTc5NDUwOTQwNiwgInJlZnJlc2hfdG9rZW4iOiAiZjRqNHd5bGl1czJxIiwgInVzZXIiOiB7ImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJhdWQiOiAiYXV0aGVudGljYXRlZCIsICJyb2xlIjogImF1dGhlbnRpY2F0ZWQiLCAiZW1haWwiOiAiZWR1YXJkb2FuZGVyc29uNDNAZ21haWwuY29tIiwgImVtYWlsX2NvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAicGhvbmUiOiAiIiwgImNvbmZpcm1lZF9hdCI6ICIyMDI0LTAyLTE1VDAzOjA3OjI4LjE4NjcxNVoiLCAibGFzdF9zaWduX2luX2F0IjogIjIwMjYtMTEtMTBUMTk6NTM6MjEuNzA5ODkxWiIsICJhcHBfbWV0YWRhdGEiOiB7Im1lbWJlciI6IHRydWUsICJwcm92aWRlciI6ICJlbWFpbCIsICJwcm92aWRlcnMiOiBbImVtYWlsIiwgImRpc2NvcmQiXX0sICJ1c2VyX21ldGFkYXRhIjogeyJhdmF0YXIiOiAiIiwgImF2YXRhcl91cmwiOiAiaHR0cHM6Ly9jZG4uZGlzY29yZGFwcC5jb20vYXZhdGFycy8yOTYwOTg0MTAzNTg4OTg2OTkvZTQ5ZGRiNjNkOWM5ZmNhODRkZTRjMTc3N2ZjMGFjN2YucG5nIiwgImN1c3RvbV9jbGFpbXMiOiB7Imdsb2JhbF9uYW1lIjogIkFuZGVyc29uIn0sICJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiB0cnVlL; sb-auth-auth-token.1=CAiZnVsbF9uYW1lIjogImFuZGVyc29uMDAwMSIsICJpc3MiOiAiaHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkiLCAibmFtZSI6ICJhbmRlcnNvbjAwMDEjMCIsICJwaG9uZV92ZXJpZmllZCI6IGZhbHNlLCAicGljdHVyZSI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAicHJvdmlkZXJfaWQiOiAiMjk2MDk4NDEwMzU4ODk4Njk5IiwgInN1YiI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcm5hbWUiOiAiQW5kZXJzb240MzEzIn0sICJpZGVudGl0aWVzIjogW3siaWRlbnRpdHlfaWQiOiAiZWFjNTEzMDQtOGMxMC00ZDdhLWIxMjUtNzk2ZDRhYWRiZDdlIiwgImlkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJ1c2VyX2lkIjogIjRkYzMzNGNkLWI5YTQtNDcxNy04ZmZlLWIwNmJiNjI3M2QxNyIsICJpZGVudGl0eV9kYXRhIjogeyJlbWFpbCI6ICJlZHVhcmRvYW5kZXJzb240M0BnbWFpbC5jb20iLCAiZW1haWxfdmVyaWZpZWQiOiBmYWxzZSwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJzdWIiOiAiNGRjMzM0Y2QtYjlhNC00NzE3LThmZmUtYjA2YmI2MjczZDE3In0sICJwcm92aWRlciI6ICJlbWFpbCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODUzNzRaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODU0MjNaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9LCB7ImlkZW50aXR5X2lkIjogIjdmMTJjOTY2LWU4OWItNDZkYy04MjY5LWY2NDllYWUxZWE0YSIsICJpZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAidXNlcl9pZCI6ICI0ZGMzMzRjZC1iOWE0LTQ3MTctOGZmZS1iMDZiYjYyNzNkMTciLCAiaWRlbnRpdHlfZGF0YSI6IHsiYXZhdGFyX3VybCI6ICJodHRwczovL2Nkbi5kaXNjb3JkYXBwLmNvbS9hdmF0YXJzLzI5NjA5ODQxMDM1ODg5ODY5OS9lNDlkZGI2M2Q5YzlmY2E4NGRlNGMxNzc3ZmMwYWM3Zi5wbmciLCAiY3VzdG9tX2NsYWltcyI6IHsiZ2xvYmFsX25hbWUiOiAiQW5kZXJzb24ifSwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSIsICJlbWFpbF92ZXJpZmllZCI6IHRydWUsICJmdWxsX25hbWUiOiAiYW5kZXJzb24wMDAxIiwgImlzcyI6ICJodHRwczovL2Rpc2NvcmQuY29tL2FwaSIsICJuYW1lIjogImFuZGVyc29uMDAwMSMwIiwgInBob25lX3ZlcmlmaWVkIjogZmFsc2UsICJwaWN0dXJlIjogImh0dHBzOi8vY2RuLmRpc2NvcmRhcHAuY29tL2F2YXRhcnMvMjk2MDk4NDEwMzU4ODk4Njk5L2U0OWRkYjYzZDljOWZjYTg0ZGU0YzE3NzdmYzBhYzdmLnBuZyIsICJwcm92aWRlcl9pZCI6ICIyOTYwOTg0MTAzNTg4OTg2OTkiLCAic3ViIjogIjI5NjA5ODQxMDM1ODg5ODY5OSJ9LCAicHJvdmlkZXIiOiAiZGlzY29yZCIsICJsYXN0X3NpZ25faW5fYXQiOiAiMjAyNC0xMC0yMFQyMDoxNTo1MS42MjU1MzNaIiwgImNyZWF0ZWRfYXQiOiAiMjAyNC0xMC0yMFQyMDoxNTo1MS42MjU1OTJaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNi0xMS0xMFQxOTo1MzoxOS45OTI0MTlaIiwgImVtYWlsIjogImVkdWFyZG9hbmRlcnNvbjQzQGdtYWlsLmNvbSJ9XSwgImNyZWF0ZWRfYXQiOiAiMjAyNC0wMi0xNVQwMzowNzoyOC4xODMxODlaIiwgInVwZGF0ZWRfYXQiOiAiMjAyNi0xMS0xMlQxNzo1MDowNi4zMzkxODZaIiwgImlzX2Fub255bW91cyI6IGZhbHNlfX0=')
@@ -60,30 +62,141 @@ def norm(text):
     t = re.sub(r'[\(\)\[\]\{\}\:\"\'\-\_\.\,\!\?]', ' ', t)
     return ' '.join(t.split())
 
-def is_cookie_expired(cookie_str, buffer_seconds=300):
+def decode_cookie_session(cookie_str):
+    """Parse Supabase SSR auth cookie chunks into a session dict, or return None."""
     if not cookie_str:
-        return True
+        return None
     try:
         chunk_map = {}
         for part in cookie_str.split(';'):
             part = part.strip()
-            if '=' in part:
-                k, v = part.split('=', 1)
-                if 'auth-token' in k:
-                    chunk_map[k.split('.')[-1]] = v
+            if '=' not in part:
+                continue
+            k, v = part.split('=', 1)
+            if 'auth-token' in k:
+                idx = k.split('.')[-1]
+                if idx.isdigit():
+                    chunk_map[int(idx)] = urllib.parse.unquote(v)
         if not chunk_map:
-            return True
-        raw_b64 = ''.join(chunk_map[str(i)] for i in range(len(chunk_map)) if str(i) in chunk_map)
+            return None
+        raw_b64 = ''.join(chunk_map[i] for i in sorted(chunk_map))
         if raw_b64.startswith('base64-'):
             raw_b64 = raw_b64[7:]
         raw_b64 += '=' * (-len(raw_b64) % 4)
-        sess = json.loads(base64.b64decode(raw_b64).decode('utf-8'))
-        exp = sess.get('expires_at')
-        if not exp:
-            return True
-        return time.time() >= (exp - buffer_seconds)
+        return json.loads(base64.b64decode(raw_b64).decode('utf-8'))
     except Exception:
+        return None
+
+
+def encode_cookie_session(sess_dict, compact=False):
+    """Serialize a Supabase session dict back into sb-auth-auth-token.N cookie chunks."""
+    if compact:
+        raw_json = json.dumps(sess_dict, separators=(',', ':'))
+    else:
+        raw_json = json.dumps(sess_dict)
+    sess_b64 = 'base64-' + base64.b64encode(raw_json.encode('utf-8')).decode('utf-8')
+    chunks = [sess_b64[i:i+3000] for i in range(0, len(sess_b64), 3000)]
+    return '; '.join(f'sb-auth-auth-token.{i}={c}' for i, c in enumerate(chunks))
+
+
+def _upstash_config():
+    url = os.getenv('UPSTASH_REDIS_REST_URL', '').strip().rstrip('/')
+    token = os.getenv('UPSTASH_REDIS_REST_TOKEN', '').strip()
+    return (url, token) if (url and token) else None
+
+
+def load_remote_token_state():
+    """Load persisted auth state from optional Upstash Redis REST store."""
+    cfg = _upstash_config()
+    if not cfg:
+        return None
+    url, token = cfg
+    try:
+        res = http_session.get(
+            f"{url}/get/anitsu:auth_state",
+            headers={'Authorization': f'Bearer {token}'},
+            timeout=5,
+        )
+        if res.status_code == 200:
+            raw = res.json().get('result')
+            if isinstance(raw, str):
+                return json.loads(raw)
+    except Exception as e:
+        print("[Anitsu Cloud] Remote state read skipped:", e)
+    return None
+
+
+def save_remote_token_state(rf, cookie_str):
+    """Persist rotated refresh_token and cookie to optional Upstash Redis REST store."""
+    cfg = _upstash_config()
+    if not cfg:
+        return
+    url, token = cfg
+    try:
+        payload = json.dumps({
+            'refresh_token': rf,
+            'cookie': cookie_str,
+            'updated_at': time.time(),
+        })
+        http_session.post(
+            f"{url}/set/anitsu:auth_state",
+            headers={'Authorization': f'Bearer {token}'},
+            data=payload.encode('utf-8'),
+            timeout=5,
+        )
+    except Exception as e:
+        print("[Anitsu Cloud] Remote state write skipped:", e)
+
+
+def save_local_token_cache(rf, cookie_str):
+    payload = {'refresh_token': rf, 'cookie': cookie_str, 'updated_at': time.time()}
+    for path in dict.fromkeys((TOKEN_CACHE_FILE, TMP_TOKEN_CACHE_FILE)):
+        try:
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(payload, f)
+            return
+        except Exception:
+            continue
+
+
+def is_cookie_expired(cookie_str, buffer_seconds=300):
+    sess = decode_cookie_session(cookie_str)
+    if not sess:
         return True
+    exp = sess.get('expires_at')
+    if not exp:
+        return True
+    return time.time() >= (exp - buffer_seconds)
+
+
+def _apply_saved_state(saved_rf, saved_ck, source_label):
+    """Apply saved token/cookie only when newer or valid compared to default state."""
+    global refresh_token, current_cookie
+    def_sess = decode_cookie_session(current_cookie) or {}
+    def_exp = def_sess.get('expires_at', 0) or 0
+    sav_sess = decode_cookie_session(saved_ck) if saved_ck else None
+    sav_exp = (sav_sess.get('expires_at', 0) or 0) if sav_sess else 0
+
+    if saved_ck and sav_exp >= def_exp and not is_cookie_expired(saved_ck, buffer_seconds=60):
+        with cookie_lock:
+            current_cookie = saved_ck
+    elif saved_ck and is_cookie_expired(current_cookie, buffer_seconds=0) and not is_cookie_expired(saved_ck, buffer_seconds=0):
+        with cookie_lock:
+            current_cookie = saved_ck
+
+    # If the default bundled cookie is strictly fresher than saved state, prefer its refresh_token too.
+    if def_exp > sav_exp and not is_cookie_expired(current_cookie, buffer_seconds=60):
+        def_rf = def_sess.get('refresh_token')
+        if def_rf:
+            refresh_token = def_rf
+            return False
+
+    if saved_rf:
+        refresh_token = saved_rf
+        print(f"[Anitsu Cloud] Loaded refresh_token from {source_label}: {refresh_token[:6]}***")
+        return True
+    return False
+
 
 def init_tokens():
     global refresh_token, current_cookie
@@ -101,44 +214,44 @@ def init_tokens():
                     if live_ck:
                         with cookie_lock:
                             current_cookie = live_ck
-                        chunk_map = {}
-                        for part in live_ck.split(';'):
-                            part = part.strip()
-                            if '=' in part:
-                                k, v = part.split('=', 1)
-                                if 'auth-token' in k:
-                                    chunk_map[k.split('.')[-1]] = v
-                        if chunk_map:
-                            raw_b64 = ''.join(chunk_map[str(i)] for i in range(len(chunk_map)) if str(i) in chunk_map)
-                            if raw_b64.startswith('base64-'):
-                                raw_b64 = raw_b64[7:]
-                            raw_b64 += '=' * (-len(raw_b64) % 4)
-                            sess = json.loads(base64.b64decode(raw_b64).decode('utf-8'))
-                            rf = sess.get('refresh_token')
-                            if rf:
-                                refresh_token = rf
-                                print(f"[Anitsu Cloud] Extracted refresh_token from {cfg_path}: {rf[:6]}***")
-                                if is_cookie_expired(current_cookie):
-                                    refresh_session()
-                                else:
-                                    print(f"[Anitsu Cloud] Cookie is still valid. Skipping immediate refresh.")
-                                return
+                        sess = decode_cookie_session(live_ck)
+                        rf = sess.get('refresh_token') if sess else None
+                        if rf:
+                            refresh_token = rf
+                            print(f"[Anitsu Cloud] Extracted refresh_token from {cfg_path}: {rf[:6]}***")
+                            if is_cookie_expired(current_cookie):
+                                refresh_session()
+                            else:
+                                print(f"[Anitsu Cloud] Cookie is still valid. Skipping immediate refresh.")
+                            return
             except Exception as e:
                 print(f"[Anitsu Cloud] Error reading {cfg_path}:", e)
 
-    if os.path.exists(TOKEN_CACHE_FILE):
-        try:
-            with open(TOKEN_CACHE_FILE, 'r', encoding='utf-8') as fp:
-                saved = json.load(fp).get('refresh_token')
-                if saved:
-                    refresh_token = saved
-                    print(f"[Anitsu Cloud] Loaded refresh_token from local cache: {refresh_token[:6]}***")
+    remote_state = load_remote_token_state()
+    if isinstance(remote_state, dict) and _apply_saved_state(
+        remote_state.get('refresh_token'), remote_state.get('cookie'), 'Upstash state'
+    ):
+        if is_cookie_expired(current_cookie):
+            refresh_session()
+        return
+
+    for cache_path in dict.fromkeys((TOKEN_CACHE_FILE, TMP_TOKEN_CACHE_FILE)):
+        if os.path.exists(cache_path):
+            try:
+                with open(cache_path, 'r', encoding='utf-8') as fp:
+                    saved = json.load(fp)
+                if isinstance(saved, dict) and _apply_saved_state(
+                    saved.get('refresh_token'), saved.get('cookie'), 'local cache'
+                ):
                     if is_cookie_expired(current_cookie):
                         refresh_session()
                     return
-        except Exception:
-            pass
-    refresh_token = os.getenv('ANITSU_REFRESH_TOKEN', DEFAULT_FALLBACK_TOKEN)
+            except Exception:
+                pass
+
+    env_rf = os.getenv('ANITSU_REFRESH_TOKEN', '').strip()
+    def_sess = decode_cookie_session(current_cookie) or {}
+    refresh_token = env_rf or def_sess.get('refresh_token') or DEFAULT_FALLBACK_TOKEN
     print(f"[Anitsu Cloud] Using fallback refresh_token: {refresh_token[:6]}***")
     if is_cookie_expired(current_cookie):
         refresh_session()
@@ -172,64 +285,115 @@ def init_catalog():
         tmdb_index = tmdb_map
         print(f"[Anitsu Cloud] Loaded {len(animes_list)} titles, indexed {len(title_index)} aliases.")
 
-def refresh_session():
-    global current_cookie, refresh_token
-    if not refresh_token:
-        return
-    try:
-        url = f'{SUPABASE_URL}/auth/v1/token?grant_type=refresh_token'
-        res = http_session.post(
-            url,
-            json={'refresh_token': refresh_token},
-            headers={'apikey': SUPABASE_ANON_KEY, 'Authorization': f'Bearer {SUPABASE_ANON_KEY}'},
-            timeout=10
-        )
-        if res.status_code == 200:
-            data = res.json()
-            new_rf = data.get('refresh_token')
-            if new_rf:
-                refresh_token = new_rf
-                try:
-                    with open(TOKEN_CACHE_FILE, 'w', encoding='utf-8') as f:
-                        json.dump({'refresh_token': new_rf, 'updated_at': time.time()}, f)
-                except Exception:
-                    pass
-            sess_json = json.dumps(data)
-            sess_b64 = 'base64-' + base64.b64encode(sess_json.encode('utf-8')).decode('utf-8')
-            chunks = [sess_b64[i:i+3000] for i in range(0, len(sess_b64), 3000)]
-            cookie_str = '; '.join([f'sb-auth-auth-token.{i}={c}' for i, c in enumerate(chunks)])
-            with cookie_lock:
-                current_cookie = cookie_str
-            anitsu_cfg_path = r'C:\Users\eduar\Desktop\AniGUI-v3.4.1\anitsu_config.json'
-            if os.path.exists(anitsu_cfg_path):
-                try:
-                    with open(anitsu_cfg_path, 'r', encoding='utf-8') as f:
-                        cfg_d = json.load(f)
-                    cfg_d['cookie'] = cookie_str
-                    with open(anitsu_cfg_path, 'w', encoding='utf-8') as f:
-                        json.dump(cfg_d, f, indent=2)
-                except Exception:
-                    pass
-            print(f"[Anitsu Cloud] Session token refreshed! User: {data.get('user', {}).get('email')}")
-        else:
-            print(f"[Anitsu Cloud] Refresh returned {res.status_code}. Using current active cookie.")
-    except Exception as e:
-        print("[Anitsu Cloud] Error refreshing token:", e)
+_refresh_lock = threading.Lock()
+_init_lock = threading.Lock()
+_initialized = False
+_last_refresh_ts = 0.0
+
+
+def _apply_supabase_session(data):
+    """Persist new Supabase session into memory, local cache, AniGUI config, and Upstash."""
+    global current_cookie, refresh_token, _last_refresh_ts
+    new_rf = data.get('refresh_token') or refresh_token
+    refresh_token = new_rf
+    cookie_str = encode_cookie_session(data, compact=False)
+    with cookie_lock:
+        current_cookie = cookie_str
+    _last_refresh_ts = time.time()
+    save_local_token_cache(new_rf, cookie_str)
+    save_remote_token_state(new_rf, cookie_str)
+    anitsu_cfg_path = r'C:\Users\eduar\Desktop\AniGUI-v3.4.1\anitsu_config.json'
+    if os.path.exists(anitsu_cfg_path):
+        try:
+            with open(anitsu_cfg_path, 'r', encoding='utf-8') as f:
+                cfg_d = json.load(f)
+            cfg_d['cookie'] = cookie_str
+            with open(anitsu_cfg_path, 'w', encoding='utf-8') as f:
+                json.dump(cfg_d, f, indent=2)
+        except Exception:
+            pass
+    print(f"[Anitsu Cloud] Session token refreshed! User: {data.get('user', {}).get('email')}")
+
+
+def refresh_session(force=False):
+    with _refresh_lock:
+        if not force and (time.time() - _last_refresh_ts < 15):
+            return
+        headers = {'apikey': SUPABASE_ANON_KEY, 'Authorization': f'Bearer {SUPABASE_ANON_KEY}'}
+        if refresh_token:
+            try:
+                res = http_session.post(
+                    f'{SUPABASE_URL}/auth/v1/token?grant_type=refresh_token',
+                    json={'refresh_token': refresh_token},
+                    headers=headers,
+                    timeout=10,
+                )
+                if res.status_code == 200:
+                    _apply_supabase_session(res.json())
+                    return
+                print(f"[Anitsu Cloud] Refresh returned {res.status_code}.")
+            except Exception as e:
+                print("[Anitsu Cloud] Error refreshing token:", e)
+
+        email = os.getenv('ANITSU_EMAIL', '').strip()
+        password = os.getenv('ANITSU_PASSWORD', '').strip()
+        if email and password:
+            try:
+                res = http_session.post(
+                    f'{SUPABASE_URL}/auth/v1/token?grant_type=password',
+                    json={'email': email, 'password': password},
+                    headers=headers,
+                    timeout=10,
+                )
+                if res.status_code == 200:
+                    _apply_supabase_session(res.json())
+                    return
+                print(f"[Anitsu Cloud] Password re-login returned {res.status_code}.")
+            except Exception as e:
+                print("[Anitsu Cloud] Error during password re-login:", e)
+
 
 def refresh_worker():
     while True:
         time.sleep(900)
         if is_cookie_expired(current_cookie, buffer_seconds=900):
-            refresh_session()
+            refresh_session(force=True)
+
+
+def ensure_initialized():
+    global _initialized
+    if _initialized:
+        return
+    with _init_lock:
+        if _initialized:
+            return
+        init_tokens()
+        init_catalog()
+        if is_cookie_expired(current_cookie):
+            refresh_session(force=True)
+        _initialized = True
+
+
+class _LazyInitASGIMiddleware:
+    """Ensure cold serverless invocations (without ASGI lifespan startup) initialize once."""
+    def __init__(self, asgi_app):
+        self.asgi_app = asgi_app
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") == "http" and not _initialized:
+            ensure_initialized()
+        await self.asgi_app(scope, receive, send)
+
+
+app.add_middleware(_LazyInitASGIMiddleware)
+
 
 @app.on_event("startup")
 def startup():
-    init_tokens()
-    init_catalog()
-    if is_cookie_expired(current_cookie):
-        refresh_session()
-    t = threading.Thread(target=refresh_worker, daemon=True)
-    t.start()
+    ensure_initialized()
+    if not os.getenv('VERCEL'):
+        t = threading.Thread(target=refresh_worker, daemon=True)
+        t.start()
 
 # --- Landing Page ---
 @app.get("/", response_class=HTMLResponse)
@@ -790,43 +954,17 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
 
 def build_minimal_cookie(cookie_str):
     """Strip bloated user metadata and mutable refresh_token from Supabase SSR cookie chunks."""
-    if not cookie_str:
+    sess = decode_cookie_session(cookie_str)
+    if not sess or not sess.get('access_token'):
         return cookie_str
-    try:
-        chunks = {}
-        for part in cookie_str.split(';'):
-            part = part.strip()
-            if '=' not in part:
-                continue
-            k, v = part.split('=', 1)
-            if 'auth-token' in k:
-                idx = k.split('.')[-1]
-                if idx.isdigit():
-                    chunks[int(idx)] = urllib.parse.unquote(v)
-        if not chunks:
-            return cookie_str
-        raw_b64 = ''.join(chunks[i] for i in sorted(chunks))
-        if raw_b64.startswith('base64-'):
-            raw_b64 = raw_b64[7:]
-        raw_b64 += '=' * (-len(raw_b64) % 4)
-        sess = json.loads(base64.b64decode(raw_b64).decode('utf-8'))
-        access_token = sess.get('access_token')
-        if not access_token:
-            return cookie_str
-        minimal_sess = {
-            'access_token': access_token,
-            'token_type': sess.get('token_type', 'bearer'),
-        }
-        for key in ('expires_in', 'expires_at'):
-            if key in sess:
-                minimal_sess[key] = sess[key]
-        minimal_b64 = 'base64-' + base64.b64encode(
-            json.dumps(minimal_sess, separators=(',', ':')).encode('utf-8')
-        ).decode('utf-8')
-        parts = [minimal_b64[i:i+3000] for i in range(0, len(minimal_b64), 3000)]
-        return '; '.join(f'sb-auth-auth-token.{i}={p}' for i, p in enumerate(parts))
-    except Exception:
-        return cookie_str
+    minimal_sess = {
+        'access_token': sess['access_token'],
+        'token_type': sess.get('token_type', 'bearer'),
+    }
+    for key in ('expires_in', 'expires_at'):
+        if key in sess:
+            minimal_sess[key] = sess[key]
+    return encode_cookie_session(minimal_sess, compact=True)
 
 
 def get_active_direct_cookie():
