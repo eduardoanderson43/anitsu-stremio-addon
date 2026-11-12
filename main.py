@@ -787,10 +787,108 @@ def format_stream_card(anime, vf, remote_path, season_num, ep_num, is_movie=Fals
     title = f"{line1}\n{line2}\n{line3}\n{line4}"
     return name, title
 
+
+def build_minimal_cookie(cookie_str):
+    """Strip bloated user metadata and mutable refresh_token from Supabase SSR cookie chunks."""
+    if not cookie_str:
+        return cookie_str
+    try:
+        chunks = {}
+        for part in cookie_str.split(';'):
+            part = part.strip()
+            if '=' not in part:
+                continue
+            k, v = part.split('=', 1)
+            if 'auth-token' in k:
+                idx = k.split('.')[-1]
+                if idx.isdigit():
+                    chunks[int(idx)] = urllib.parse.unquote(v)
+        if not chunks:
+            return cookie_str
+        raw_b64 = ''.join(chunks[i] for i in sorted(chunks))
+        if raw_b64.startswith('base64-'):
+            raw_b64 = raw_b64[7:]
+        raw_b64 += '=' * (-len(raw_b64) % 4)
+        sess = json.loads(base64.b64decode(raw_b64).decode('utf-8'))
+        access_token = sess.get('access_token')
+        if not access_token:
+            return cookie_str
+        minimal_sess = {
+            'access_token': access_token,
+            'token_type': sess.get('token_type', 'bearer'),
+        }
+        for key in ('expires_in', 'expires_at'):
+            if key in sess:
+                minimal_sess[key] = sess[key]
+        minimal_b64 = 'base64-' + base64.b64encode(
+            json.dumps(minimal_sess, separators=(',', ':')).encode('utf-8')
+        ).decode('utf-8')
+        parts = [minimal_b64[i:i+3000] for i in range(0, len(minimal_b64), 3000)]
+        return '; '.join(f'sb-auth-auth-token.{i}={p}' for i, p in enumerate(parts))
+    except Exception:
+        return cookie_str
+
+
+def get_active_direct_cookie():
+    """Return a valid minimized Anitsu auth cookie, refreshing proactively if near expiry."""
+    with cookie_lock:
+        ck = current_cookie
+    if not ck or is_cookie_expired(ck, buffer_seconds=600):
+        refresh_session()
+        with cookie_lock:
+            ck = current_cookie
+    return build_minimal_cookie(ck)
+
+
+def build_stream_entry(
+    card_name,
+    card_title,
+    remote_path,
+    vf,
+    binge_group,
+    base_url="",
+    subs=None,
+    direct_cookie=None,
+    use_proxy=False,
+):
+    """Build a Stremio stream card using direct Anitsu playback + proxyHeaders by default."""
+    quoted_path = urllib.parse.quote(remote_path)
+    behavior_hints = {"bingeGroup": binge_group}
+    if isinstance(vf, dict):
+        if vf.get("name"):
+            behavior_hints["filename"] = vf["name"]
+        if isinstance(vf.get("size"), int) and vf["size"] > 0:
+            behavior_hints["videoSize"] = vf["size"]
+
+    if use_proxy or not direct_cookie:
+        stream_url = f"{base_url}/proxy-stream?path={quoted_path}"
+        behavior_hints["notWebReady"] = False
+    else:
+        stream_url = f"https://nuvem.anitsu.moe/api/download?path={quoted_path}"
+        behavior_hints["notWebReady"] = True
+        behavior_hints["proxyHeaders"] = {
+            "request": {
+                "Cookie": direct_cookie,
+                "User-Agent": UA,
+                "Referer": "https://nuvem.anitsu.moe/",
+            }
+        }
+
+    entry = {
+        "name": card_name,
+        "title": card_title,
+        "url": stream_url,
+        "behaviorHints": behavior_hints,
+    }
+    if subs:
+        entry["subtitles"] = subs
+    return entry
+
+
 def get_anitsu_manifest():
     return {
         "id": "community.anitsu.cloud",
-        "version": "1.3.2",
+        "version": "1.4.0",
         "name": "☁️ Anitsu Nuvem [PT-BR]",
         "description": "5.800+ Animes, Filmes de Anime, Desenhos e Doramas em Fansub 1080p PT-BR direto da Nuvem Anitsu com múltiplas opções de releases!",
         "logo": "https://nuvem.anitsu.moe/icon.png",
@@ -952,7 +1050,7 @@ def meta(type_: str, video_id: str):
         }
     }
 
-def find_monogatari_streams(video_id, title, season_num, ep_num, base_url=""):
+def find_monogatari_streams(video_id, title, season_num, ep_num, base_url="", use_proxy=False):
     base = "Animes/Letra M/Monogatari Series"
     t_lower = (title or '').lower()
     
@@ -1106,26 +1204,31 @@ def find_monogatari_streams(video_id, title, season_num, ep_num, base_url=""):
     walk(target_folder, 0)
 
     subs = get_subtitles_for_media(video_id, title=clean_title, is_movie=is_movie)
+    direct_cookie = None if use_proxy else get_active_direct_cookie()
     cards = []
     dummy_anime = {'id': 28524, 'n': clean_title, 'p': base}
     for p, vf in found:
-        name, title_card = format_stream_card(dummy_anime, vf, p, season_num, ep_num, is_movie=is_movie)
-        stream_item = {
-            "name": name,
-            "title": title_card,
-            "url": f"{base_url}/proxy-stream?path={urllib.parse.quote(p)}",
-            "behaviorHints": {
-                "notWebReady": False,
-                "bingeGroup": f"anitsu-28524-{season_num}"
-            }
-        }
-        if subs:
-            stream_item["subtitles"] = subs
-        cards.append(stream_item)
+        name, title_card = format_stream_card(
+            dummy_anime, vf, p, season_num, ep_num, is_movie=is_movie, is_proxy=use_proxy
+        )
+        cards.append(
+            build_stream_entry(
+                name,
+                title_card,
+                p,
+                vf,
+                f"anitsu-28524-{season_num}",
+                base_url=base_url,
+                subs=subs,
+                direct_cookie=direct_cookie,
+                use_proxy=use_proxy,
+            )
+        )
     return cards
 
 @app.get("/stream/{type_}/{video_id}.json")
-def stream(type_: str, video_id: str, request: Request = None):
+def stream(type_: str, video_id: str, request: Request = None, proxy: int = 0):
+    use_proxy = bool(proxy)
     base_url = str(request.base_url).rstrip('/') if request else 'https://anitsu-stremio-addon.onrender.com'
     parts = video_id.split(':')
     matched_anime = None
@@ -1182,7 +1285,9 @@ def stream(type_: str, video_id: str, request: Request = None):
 
     title_check = (title or '').lower()
     if ('monogatari' in title_check or 'tt1480925' in video_id or video_id.startswith('kitsu:4363') or video_id.startswith('mal:5081')):
-        m_streams = find_monogatari_streams(video_id, title or 'Bakemonogatari', season_num, ep_num, base_url=base_url)
+        m_streams = find_monogatari_streams(
+            video_id, title or 'Bakemonogatari', season_num, ep_num, base_url=base_url, use_proxy=use_proxy
+        )
         if m_streams:
             return {"streams": m_streams}
 
@@ -1213,25 +1318,25 @@ def stream(type_: str, video_id: str, request: Request = None):
         chosen_releases.append(hardsub_rel)
 
     subs = get_subtitles_for_media(video_id, title=(matched_anime['n'] if matched_anime else ''), is_movie=is_movie)
+    direct_cookie = None if (use_proxy or not chosen_releases) else get_active_direct_cookie()
 
     for r_idx, (remote_path, vf) in enumerate(chosen_releases):
         card_name, card_title = format_stream_card(
-            matched_anime, vf, remote_path, season_num, ep_num, is_movie=is_movie, is_proxy=False
+            matched_anime, vf, remote_path, season_num, ep_num, is_movie=is_movie, is_proxy=use_proxy
         )
-        proxy_url = f"{base_url}/proxy-stream?path={urllib.parse.quote(remote_path)}"
-
-        stream_entry = {
-            "name": card_name,
-            "title": card_title,
-            "url": proxy_url,
-            "behaviorHints": {
-                "notWebReady": False,
-                "bingeGroup": f"anitsu-{matched_anime['id']}-{r_idx}"
-            }
-        }
-        if subs:
-            stream_entry["subtitles"] = subs
-        streams.append(stream_entry)
+        streams.append(
+            build_stream_entry(
+                card_name,
+                card_title,
+                remote_path,
+                vf,
+                f"anitsu-{matched_anime['id']}-{r_idx}",
+                base_url=base_url,
+                subs=subs,
+                direct_cookie=direct_cookie,
+                use_proxy=use_proxy,
+            )
+        )
 
     return {"streams": streams}
 
