@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Response
-from fastapi.responses import JSONResponse, StreamingResponse, HTMLResponse
+from fastapi.responses import JSONResponse, StreamingResponse, HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+import hashlib
 import json
 import os
 import re
@@ -105,8 +106,77 @@ def _upstash_config():
     return (url, token) if (url and token) else None
 
 
+BLOB_STATE_PATHNAME = 'anitsu/auth_state.json'
+
+
+def _blob_config():
+    token = (os.getenv('BLOB_READ_WRITE_TOKEN') or '').strip()
+    parts = token.split('_')
+    if len(parts) >= 5 and parts[3]:
+        return token, parts[3]
+    return None
+
+
+def has_remote_store():
+    return bool(_blob_config() or _upstash_config())
+
+
+def _load_blob_state():
+    cfg = _blob_config()
+    if not cfg:
+        return None
+    token, store_id = cfg
+    try:
+        res = http_session.get(
+            f"https://{store_id}.private.blob.vercel-storage.com/{BLOB_STATE_PATHNAME}",
+            params={'cache': '0'},
+            headers={'Authorization': f'Bearer {token}'},
+            timeout=6,
+        )
+        if res.status_code == 200:
+            return res.json()
+        if res.status_code != 404:
+            print(f"[Anitsu Cloud] Blob state read returned {res.status_code}")
+    except Exception as e:
+        print("[Anitsu Cloud] Blob state read skipped:", e)
+    return None
+
+
+def _save_blob_state(payload_bytes):
+    cfg = _blob_config()
+    if not cfg:
+        return False
+    token, store_id = cfg
+    try:
+        res = http_session.put(
+            'https://vercel.com/api/blob/',
+            params={'pathname': BLOB_STATE_PATHNAME},
+            data=payload_bytes,
+            headers={
+                'Authorization': f'Bearer {token}',
+                'x-api-version': '13',
+                'x-vercel-blob-store-id': store_id,
+                'x-vercel-blob-access': 'private',
+                'x-allow-overwrite': '1',
+                'x-add-random-suffix': '0',
+                'x-content-type': 'application/json',
+                'x-cache-control-max-age': '60',
+            },
+            timeout=8,
+        )
+        if res.status_code == 200:
+            return True
+        print(f"[Anitsu Cloud] Blob state write returned {res.status_code}: {res.text[:160]}")
+    except Exception as e:
+        print("[Anitsu Cloud] Blob state write skipped:", e)
+    return False
+
+
 def load_remote_token_state():
-    """Load persisted auth state from optional Upstash Redis REST store."""
+    """Load persisted auth state from private Vercel Blob (preferred) or optional Upstash Redis."""
+    state = _load_blob_state()
+    if isinstance(state, dict) and state.get('refresh_token'):
+        return state
     cfg = _upstash_config()
     if not cfg:
         return None
@@ -127,21 +197,22 @@ def load_remote_token_state():
 
 
 def save_remote_token_state(rf, cookie_str):
-    """Persist rotated refresh_token and cookie to optional Upstash Redis REST store."""
+    """Persist rotated refresh_token and cookie to private Vercel Blob and/or Upstash Redis."""
+    payload = json.dumps({
+        'refresh_token': rf,
+        'cookie': cookie_str,
+        'updated_at': time.time(),
+    }).encode('utf-8')
+    _save_blob_state(payload)
     cfg = _upstash_config()
     if not cfg:
         return
     url, token = cfg
     try:
-        payload = json.dumps({
-            'refresh_token': rf,
-            'cookie': cookie_str,
-            'updated_at': time.time(),
-        })
         http_session.post(
             f"{url}/set/anitsu:auth_state",
             headers={'Authorization': f'Bearer {token}'},
-            data=payload.encode('utf-8'),
+            data=payload,
             timeout=5,
         )
     except Exception as e:
@@ -228,9 +299,12 @@ def init_tokens():
                 print(f"[Anitsu Cloud] Error reading {cfg_path}:", e)
 
     remote_state = load_remote_token_state()
-    if isinstance(remote_state, dict) and _apply_saved_state(
-        remote_state.get('refresh_token'), remote_state.get('cookie'), 'Upstash state'
-    ):
+    if isinstance(remote_state, dict) and remote_state.get('refresh_token'):
+        used_remote = _apply_saved_state(
+            remote_state.get('refresh_token'), remote_state.get('cookie'), 'remote store'
+        )
+        if not used_remote and has_remote_store() and not is_cookie_expired(current_cookie):
+            save_remote_token_state(refresh_token, current_cookie)
         if is_cookie_expired(current_cookie):
             refresh_session()
         return
@@ -243,6 +317,8 @@ def init_tokens():
                 if isinstance(saved, dict) and _apply_saved_state(
                     saved.get('refresh_token'), saved.get('cookie'), 'local cache'
                 ):
+                    if has_remote_store() and not is_cookie_expired(current_cookie):
+                        save_remote_token_state(refresh_token, current_cookie)
                     if is_cookie_expired(current_cookie):
                         refresh_session()
                     return
@@ -255,6 +331,8 @@ def init_tokens():
     print(f"[Anitsu Cloud] Using fallback refresh_token: {refresh_token[:6]}***")
     if is_cookie_expired(current_cookie):
         refresh_session()
+    elif has_remote_store():
+        save_remote_token_state(refresh_token, current_cookie)
 GENERIC_WORDS = {'no', 'the', 'da', 'de', 'do', 'new', 'brand', 'season', 'movie', 'filme', 'part', 'arc', 'to', 'wa', 'ga', 'o', 'a', 'in', 'of', 'and', 's01', 's02', 's03', 's04', 's1', 's2', 'um', 'uma', 'dia', 'man'}
 cache_title_resolution = {}
 cache_subtitles = {}
@@ -316,9 +394,25 @@ def _apply_supabase_session(data):
 
 
 def refresh_session(force=False):
+    global refresh_token, current_cookie
     with _refresh_lock:
         if not force and (time.time() - _last_refresh_ts < 15):
             return
+        if has_remote_store():
+            # Another instance may already have rotated the token: adopt it instead of reusing a revoked one.
+            remote_state = load_remote_token_state()
+            if isinstance(remote_state, dict) and remote_state.get('refresh_token'):
+                remote_ck = remote_state.get('cookie')
+                cur_exp = (decode_cookie_session(current_cookie) or {}).get('expires_at', 0) or 0
+                rem_exp = ((decode_cookie_session(remote_ck) or {}).get('expires_at', 0) or 0) if remote_ck else 0
+                rem_ts = remote_state.get('updated_at', 0) or 0
+                if remote_ck and rem_exp >= cur_exp and (not force or rem_ts > time.time() - 60) and not is_cookie_expired(remote_ck, buffer_seconds=600):
+                    refresh_token = remote_state['refresh_token']
+                    with cookie_lock:
+                        current_cookie = remote_ck
+                    return
+                if rem_exp >= cur_exp:
+                    refresh_token = remote_state['refresh_token']
         headers = {'apikey': SUPABASE_ANON_KEY, 'Authorization': f'Bearer {SUPABASE_ANON_KEY}'}
         if refresh_token:
             try:
@@ -394,6 +488,84 @@ def startup():
     if not os.getenv('VERCEL'):
         t = threading.Thread(target=refresh_worker, daemon=True)
         t.start()
+
+@app.get("/api/cron-refresh")
+def cron_refresh(request: Request):
+    """Keep-alive refresh endpoint (called daily by Vercel Cron) to keep Anitsu refresh_token alive."""
+    cron_secret = os.getenv('CRON_SECRET', '').strip()
+    auth_hdr = request.headers.get('authorization', '')
+    authorized = bool(cron_secret and auth_hdr == f'Bearer {cron_secret}')
+    ensure_initialized()
+    with cookie_lock:
+        ck = current_cookie
+    if authorized or is_cookie_expired(ck, buffer_seconds=1800):
+        refresh_session(force=True)
+        return {"ok": True, "refreshed": True}
+    return {"ok": True, "refreshed": False}
+
+
+@app.get("/login")
+def discord_login(request: Request):
+    """Start Discord PKCE login and store verifier in an HttpOnly cookie."""
+    verifier = base64.urlsafe_b64encode(os.urandom(32)).rstrip(b'=').decode('ascii')
+    challenge = base64.urlsafe_b64encode(
+        hashlib.sha256(verifier.encode('ascii')).digest()
+    ).rstrip(b'=').decode('ascii')
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host") or "anitsu-stremio-addon.vercel.app"
+    proto = request.headers.get("x-forwarded-proto") or request.url.scheme or "https"
+    redirect_to = f"{proto}://{host}/auth/callback"
+    authorize_url = (
+        f"{SUPABASE_URL}/auth/v1/authorize?"
+        + urllib.parse.urlencode({
+            "provider": "discord",
+            "redirect_to": redirect_to,
+            "code_challenge": challenge,
+            "code_challenge_method": "s256",
+        })
+    )
+    resp = RedirectResponse(url=authorize_url, status_code=302)
+    resp.set_cookie(
+        "anitsu_pkce_verifier",
+        verifier,
+        max_age=600,
+        httponly=True,
+        samesite="lax",
+        secure=(proto == "https"),
+    )
+    return resp
+
+
+@app.get("/auth/callback", response_class=HTMLResponse)
+def discord_callback(request: Request, code: str = ""):
+    """Complete Discord PKCE flow and persist refreshed session to Vercel Blob."""
+    verifier = request.cookies.get("anitsu_pkce_verifier", "").strip()
+    if not code or not verifier:
+        return HTMLResponse("<h3>Sessao PKCE ausente ou expirada. Abra /login novamente.</h3>", status_code=400)
+    res = http_session.post(
+        f"{SUPABASE_URL}/auth/v1/token?grant_type=pkce",
+        json={"auth_code": code, "code_verifier": verifier},
+        headers={'apikey': SUPABASE_ANON_KEY, 'Authorization': f'Bearer {SUPABASE_ANON_KEY}'},
+        timeout=10,
+    )
+    if res.status_code != 200:
+        return HTMLResponse(f"<h3>Falha ao autenticar ({res.status_code}).</h3>", status_code=400)
+    data = res.json()
+    user = data.get("user") or {}
+    owner_id = (decode_cookie_session(DEFAULT_INITIAL_COOKIE) or {}).get("user", {}).get("id")
+    if owner_id and user.get("id") != owner_id:
+        return HTMLResponse("<h3>Conta Discord diferente do proprietario do addon.</h3>", status_code=403)
+    if not user.get("app_metadata", {}).get("member"):
+        return HTMLResponse("<h3>Conta sem assinatura ativa na Nuvem Anitsu.</h3>", status_code=403)
+    _apply_supabase_session(data)
+    resp = HTMLResponse(
+        "<html><body style='background:#0f172a;color:#38bdf8;font-family:sans-serif;text-align:center;padding:50px;'>"
+        "<h2>&#9989; Login via Discord concluido!</h2>"
+        "<p>Sessao salva automaticamente na nuvem. Voce ja pode voltar para o Stremio.</p>"
+        "</body></html>"
+    )
+    resp.delete_cookie("anitsu_pkce_verifier")
+    return resp
+
 
 # --- Landing Page ---
 @app.get("/", response_class=HTMLResponse)
