@@ -1,0 +1,14 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.git
+.gitignore
+.dockerignore
+.env
+.vercel
+token_cache.json
+build_full_catalog.py
+Dockerfile
+render.yaml
+README.md

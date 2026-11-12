@@ -6,3 +6,4 @@ token_cache.json
 .venv
 env/
 venv/
+.vercel/
