@@ -100,8 +100,8 @@ def encode_cookie_session(sess_dict, compact=False):
 
 
 def _upstash_config():
-    url = os.getenv('UPSTASH_REDIS_REST_URL', '').strip().rstrip('/')
-    token = os.getenv('UPSTASH_REDIS_REST_TOKEN', '').strip()
+    url = (os.getenv('UPSTASH_REDIS_REST_URL') or os.getenv('KV_REST_API_URL') or '').strip().rstrip('/')
+    token = (os.getenv('UPSTASH_REDIS_REST_TOKEN') or os.getenv('KV_REST_API_TOKEN') or '').strip()
     return (url, token) if (url and token) else None
 
 
